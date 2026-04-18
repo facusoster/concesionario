@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistema de Gestión - Agencia de Autos</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Sistema de Gestión para Agencia de Autos</h1>
+
+      <section class="card">
+        <h2>Alta de vehículo</h2>
+        <form id="car-form" novalidate>
+          <div class="grid">
+            <label>
+              Marca
+              <input id="brand" name="brand" required maxlength="40" />
+            </label>
+            <label>
+              Modelo
+              <input id="model" name="model" required maxlength="40" />
+            </label>
+            <label>
+              Año
+              <input id="year" name="year" type="number" min="1900" max="2100" required />
+            </label>
+            <label>
+              Precio (USD)
+              <input id="price" name="price" type="number" min="0" step="0.01" required />
+            </label>
+            <label>
+              Tipo
+              <select id="type" name="type" required>
+                <option value="">Seleccionar</option>
+                <option>Sedán</option>
+                <option>SUV</option>
+                <option>Hatchback</option>
+                <option>Pickup</option>
+                <option>Coupé</option>
+              </select>
+            </label>
+            <label>
+              Estado
+              <select id="status" name="status" required>
+                <option value="">Seleccionar</option>
+                <option>Disponible</option>
+                <option>Reservado</option>
+                <option>Vendido</option>
+              </select>
+            </label>
+          </div>
+          <button type="submit">Guardar vehículo</button>
+          <p id="form-message" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Listado</h2>
+        <div class="toolbar">
+          <label>
+            Buscar por marca/modelo
+            <input id="search" placeholder="Ej: Toyota Corolla" />
+          </label>
+          <label>
+            Filtrar por estado
+            <select id="status-filter">
+              <option value="">Todos</option>
+              <option>Disponible</option>
+              <option>Reservado</option>
+              <option>Vendido</option>
+            </select>
+          </label>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Marca</th>
+              <th>Modelo</th>
+              <th>Año</th>
+              <th>Tipo</th>
+              <th>Estado</th>
+              <th>Precio</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="cars-body"></tbody>
+        </table>
+        <p id="empty-message" class="muted">No hay vehículos cargados.</p>
+      </section>
+
+      <section class="card stats">
+        <h2>Resumen</h2>
+        <p><strong id="count">0</strong> vehículos registrados</p>
+        <p>Valor total estimado: <strong id="total-value">USD 0.00</strong></p>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
