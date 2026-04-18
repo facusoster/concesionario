@@ -1,4 +1,5 @@
 const STORAGE_KEY = "concesionario.cars";
+const FUTURE_YEAR_BUFFER = 1;
 
 const carForm = document.getElementById("car-form");
 const formMessage = document.getElementById("form-message");
@@ -41,7 +42,7 @@ function applyFilters(list) {
 }
 
 function formatCurrency(value) {
-  return new Intl.NumberFormat("es-AR", {
+  return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 2,
@@ -98,7 +99,7 @@ carForm.addEventListener("submit", (event) => {
   const type = String(formData.get("type") || "").trim();
   const status = String(formData.get("status") || "").trim();
 
-  const currentYear = new Date().getFullYear() + 1;
+  const currentYear = new Date().getFullYear() + FUTURE_YEAR_BUFFER;
   if (!brand || !model || !type || !status || !Number.isFinite(year) || !Number.isFinite(price)) {
     showMessage("Completá todos los campos obligatorios.", true);
     return;

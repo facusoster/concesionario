@@ -4,7 +4,7 @@ Sistema de Gestión para Agencia de Autos (Trabajo Práctico Parcial).
 
 ## Uso
 
-Abrí `/home/runner/work/concesionario/concesionario/index.html` en tu navegador.
+Abrí `index.html` en tu navegador.
 
 ### Funcionalidades
 
