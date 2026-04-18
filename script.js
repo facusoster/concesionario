@@ -1,5 +1,5 @@
 const STORAGE_KEY = "concesionario.cars";
-const FUTURE_YEAR_BUFFER = 1;
+const MAX_FUTURE_YEARS = 1;
 
 const carForm = document.getElementById("car-form");
 const formMessage = document.getElementById("form-message");
@@ -99,7 +99,7 @@ carForm.addEventListener("submit", (event) => {
   const type = String(formData.get("type") || "").trim();
   const status = String(formData.get("status") || "").trim();
 
-  const currentYear = new Date().getFullYear() + FUTURE_YEAR_BUFFER;
+  const currentYear = new Date().getFullYear() + MAX_FUTURE_YEARS;
   if (!brand || !model || !type || !status || !Number.isFinite(year) || !Number.isFinite(price)) {
     showMessage("Completá todos los campos obligatorios.", true);
     return;
