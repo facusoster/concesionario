@@ -1,0 +1,13 @@
+# Ignorar carpetas completas
+CONTEXTO/
+.vscode/
+
+# Ignorar archivos específicos
+.env
+config.php
+*.log
+codSQL.md
+*.pdf
+repaso.md
+repaso.html
+
