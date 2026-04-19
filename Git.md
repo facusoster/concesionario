@@ -1,21 +1,20 @@
 ## Inicia el repositorio local:
 
-```bash
-facus@KameHouse MINGW64 /d/xampp/htdocs/Soster_Facundo_ProdWeb1
-$ git init
-```
+(ejemplos de conexion)
+
 
 ## Añade tus archivos al área de preparación:
 
 ```bash
-facus@KameHouse MINGW64 /d/xampp/htdocs/Soster_Facundo_ProdWeb1
 $ git init
+
+$ git add .
 ```
 
 ## Crea tu primer punto de control (commit):
 
 ```bash
-facus@KameHouse MINGW64 /d/xampp/htdocs/Soster_Facundo_ProdWeb1 (master)
+ (master)
 $ git commit -m "Subiendo mi proyecto PHP"
 ```
 
@@ -24,14 +23,14 @@ $ git commit -m "Subiendo mi proyecto PHP"
 Ve a tu repositorio en GitHub, copia la URL y pégala aquí:
 
 ```bash
-facus@KameHouse MINGW64 /d/xampp/htdocs/Soster_Facundo_ProdWeb1 (master)
-$ git remote add origin https://github.com/facusoster/produccionWeb01
+ (master)
+$ git remote add origin https://github.com/facusoster/concesionario
 ```
 
 ## Sube los archivos:
 
 ```bash
-facus@KameHouse MINGW64 /d/xampp/htdocs/Soster_Facundo_ProdWeb1 (master)
+ (master)
 $ git push -u origin master
 ```
 
@@ -65,14 +64,14 @@ git push
 
 ## Obtener la URL del repositorio
 ```Bash
-https://github.com/facusoster/produccionWeb01
+https://github.com/facusoster/concesionario
 ```
 
 ## Clonar el proyecto
 Abre una terminal (Git Bash o CMD) en la carpeta donde quieras guardar el proyecto y escribe:
 
 ```bash
-git clone https://github.com/facusoster/produccionWeb01
+git clone https://github.com/facusoster/concesionario
 ```
 
 # ¿Cómo bajar cambios nuevos? (Si ya lo habías clonado antes)
