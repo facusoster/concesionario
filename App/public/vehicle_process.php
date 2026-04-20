@@ -22,6 +22,71 @@ require_once __DIR__ . '/../src/Exceptions/AuthException.php';
 $action = $_POST['action'] ?? '';
 $repo = new VehicleRepository();
 
+const VEHICLE_IMAGE_UPLOAD_DIR = __DIR__ . '/uploads/vehicles';
+
+function ensureVehicleUploadDirExists(): void {
+    if (!is_dir(VEHICLE_IMAGE_UPLOAD_DIR) && !mkdir(VEHICLE_IMAGE_UPLOAD_DIR, 0775, true) && !is_dir(VEHICLE_IMAGE_UPLOAD_DIR)) {
+        throw new RuntimeException('No se pudo crear la carpeta de imágenes.');
+    }
+}
+
+function removeVehicleImageFile(?string $fileName): void {
+    if ($fileName === null || trim($fileName) === '') {
+        return;
+    }
+
+    $safeName = basename($fileName);
+    $fullPath = VEHICLE_IMAGE_UPLOAD_DIR . '/' . $safeName;
+    if (is_file($fullPath)) {
+        @unlink($fullPath);
+    }
+}
+
+function processVehicleImageUpload(?array $file): ?string {
+    if ($file === null || !isset($file['error']) || (int)$file['error'] === UPLOAD_ERR_NO_FILE) {
+        return null;
+    }
+
+    if ((int)$file['error'] !== UPLOAD_ERR_OK) {
+        throw new ValidationException('No se pudo subir la imagen. Máximo 2MB. Formatos permitidos: JPG, PNG.');
+    }
+
+    $maxBytes = 2 * 1024 * 1024;
+    $size = (int)($file['size'] ?? 0);
+    if ($size <= 0 || $size > $maxBytes) {
+        throw new ValidationException('Máximo 2MB. Formatos permitidos: JPG, PNG.');
+    }
+
+    $tmpName = (string)($file['tmp_name'] ?? '');
+    if ($tmpName === '' || !is_uploaded_file($tmpName)) {
+        throw new ValidationException('Archivo de imagen inválido.');
+    }
+
+    $originalName = (string)($file['name'] ?? '');
+    $ext = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+    $allowedExtensions = ['jpg', 'jpeg', 'png'];
+    if (!in_array($ext, $allowedExtensions, true)) {
+        throw new ValidationException('Máximo 2MB. Formatos permitidos: JPG, PNG.');
+    }
+
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    $mime = $finfo->file($tmpName);
+    $allowedMimeTypes = ['image/jpeg', 'image/png'];
+    if ($mime === false || !in_array($mime, $allowedMimeTypes, true)) {
+        throw new ValidationException('Máximo 2MB. Formatos permitidos: JPG, PNG.');
+    }
+
+    ensureVehicleUploadDirExists();
+    $fileName = bin2hex(random_bytes(16)) . '.' . $ext;
+    $destination = VEHICLE_IMAGE_UPLOAD_DIR . '/' . $fileName;
+
+    if (!move_uploaded_file($tmpName, $destination)) {
+        throw new RuntimeException('No se pudo guardar la imagen en el servidor.');
+    }
+
+    return $fileName;
+}
+
 function redirectVehicleFormError(string $message, ?int $id = null): void {
     Flash::error($message);
     $url = 'vehicle_form.php';
@@ -41,6 +106,7 @@ try {
         $year = $yearRaw !== '' ? (int)$yearRaw : null;
         $priceRaw = trim((string)($_POST['price'] ?? ''));
         $price = $priceRaw !== '' ? (float)$priceRaw : null;
+        $status = trim((string)($_POST['status'] ?? 'disponible'));
 
         if ($type === '' || $brand === '' || $model === '' || $yearRaw === '' || $priceRaw === '') {
             throw new ValidationException('Tipo, marca, modelo, año y precio son obligatorios.');
@@ -54,7 +120,21 @@ try {
             throw new ValidationException('El precio debe ser un número válido mayor o igual a 0.');
         }
 
-        $veh = new Vehicle(['type'=>$type,'brand'=>$brand,'model'=>$model,'year'=>$year,'price'=>$price]);
+        if (!in_array($status, ['disponible', 'vendido'], true)) {
+            throw new ValidationException('El estado seleccionado no es válido.');
+        }
+
+        $uploadedImageName = processVehicleImageUpload($_FILES['image'] ?? null);
+
+        $veh = new Vehicle([
+            'type' => $type,
+            'brand' => $brand,
+            'model' => $model,
+            'year' => $year,
+            'price' => $price,
+            'image_name' => $uploadedImageName,
+            'status' => $status,
+        ]);
         $repo->save($veh);
         Flash::success('Vehículo creado correctamente.');
         header('Location: vehicles.php');
@@ -72,6 +152,7 @@ try {
         $yearRaw = trim((string)($_POST['year'] ?? ''));
         $year = $yearRaw !== '' ? (int)$yearRaw : null;
         $priceRaw = trim((string)($_POST['price'] ?? ''));
+        $status = trim((string)($_POST['status'] ?? 'disponible'));
 
         if ($type === '' || $brand === '' || $model === '' || $yearRaw === '' || $priceRaw === '') {
             throw new ValidationException('Tipo, marca, modelo, año y precio son obligatorios.');
@@ -85,11 +166,23 @@ try {
             throw new ValidationException('El precio debe ser un número válido mayor o igual a 0.');
         }
 
+        if (!in_array($status, ['disponible', 'vendido'], true)) {
+            throw new ValidationException('El estado seleccionado no es válido.');
+        }
+
+        $uploadedImageName = processVehicleImageUpload($_FILES['image'] ?? null);
+
         $veh->setType($type);
         $veh->setBrand($brand);
         $veh->setModel($model);
         $veh->setYear($year);
         $veh->setPrice((float)$priceRaw);
+        $veh->setStatus($status);
+        if ($uploadedImageName !== null) {
+            $oldImageName = $veh->getImageName();
+            $veh->setImageName($uploadedImageName);
+            removeVehicleImageFile($oldImageName);
+        }
 
         $repo->save($veh);
         Flash::success('Vehículo actualizado correctamente.');
@@ -98,6 +191,13 @@ try {
     } elseif ($action === 'delete') {
         Auth::requireAdmin();
         $id = (int)($_POST['id'] ?? 0);
+        $veh = $repo->findById($id);
+        if ($veh && $veh->getStatus() === 'vendido') {
+            throw new ValidationException('No se puede eliminar un vehículo vendido. Se conserva para historial.');
+        }
+        if ($veh) {
+            removeVehicleImageFile($veh->getImageName());
+        }
         $repo->delete($id);
         Flash::success('Vehículo eliminado correctamente.');
         header('Location: vehicles.php');
@@ -112,7 +212,7 @@ try {
         'action' => $action,
     ]);
     if ($action === 'delete') {
-        Flash::error('No tienes permiso para eliminar vehículos.');
+        Flash::error('No tienes permiso para eliminar vehículos. Por favor, contacta a un administrador para realizar esta acción.');
         header('Location: vehicles.php');
         exit;
     }
@@ -127,6 +227,7 @@ try {
             'model' => trim($_POST['model'] ?? ''),
             'year' => trim((string)($_POST['year'] ?? '')),
             'price' => trim((string)($_POST['price'] ?? '')),
+            'status' => trim((string)($_POST['status'] ?? 'disponible')),
         ];
     }
     if ($action === 'update') {
@@ -147,6 +248,7 @@ try {
             'model' => trim($_POST['model'] ?? ''),
             'year' => trim((string)($_POST['year'] ?? '')),
             'price' => trim((string)($_POST['price'] ?? '')),
+            'status' => trim((string)($_POST['status'] ?? 'disponible')),
         ];
     }
     if ($action === 'update') {

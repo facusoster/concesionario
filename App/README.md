@@ -117,6 +117,8 @@ class Vehicle extends Manageable {
     private ?string $model = null;
     private ?int $year = null;
     private ?float $price = null;
+    private ?string $imageName = null;
+    private string $status = 'disponible';
 
     private static int $totalInstances = 0;
 }
@@ -169,6 +171,20 @@ $_SESSION['role'] = $user->getRole();
 
 Las operaciones de alta, modificación y eliminación de vehículos también se ejecutan con consultas preparadas. De este modo, los datos ingresados por formulario no se mezclan con la sentencia SQL y el acceso a datos queda controlado por una capa específica.
 
+Desde la Fase 2, el módulo de vehículos incorpora subida de imágenes con validación de formato y tamaño, generación de nombre único, persistencia del nombre de archivo y política de fallback a una imagen por defecto cuando el usuario no carga foto.
+
+```php
+$maxBytes = 2 * 1024 * 1024;
+$allowedExtensions = ['jpg', 'jpeg', 'png'];
+$allowedMimeTypes = ['image/jpeg', 'image/png'];
+```
+
+En la Fase 3 se agregó el manejo de estado comercial del vehículo (`disponible` o `vendido`) en la capa de dominio, en el repositorio y en los formularios de alta/edición. Este estado también se expone en el listado con badge visual y participa en los filtros para navegación y dashboard.
+
+En la Fase 4 se incorporó en dashboard un bloque de tarjetas de vehículos en venta (disponibles), con foto, modelo, precio, estado, descripción breve y paginación. Este bloque reutiliza los mismos parámetros de navegación del módulo de vehículos (`q`, `sort`, `dir`, `page`, `perPage`) para mantener coherencia funcional.
+
+En la Fase 5 se incorporó la exportación CSV de vehículos para análisis en BI, restringida al rol administrador. La exportación respeta filtros activos del listado (`q`, `status`, `sort`, `dir`) y genera un archivo en codificación UTF-8 con cabeceras estandarizadas para consumo en Excel y Power BI.
+
 ---
 
 ## Base de datos
@@ -196,6 +212,8 @@ CREATE TABLE `vehicles` (
   `model` varchar(100) NOT NULL,
   `year` smallint(5) UNSIGNED DEFAULT NULL,
   `price` decimal(10,2) NOT NULL DEFAULT 0.00,
+    `image_name` varchar(255) DEFAULT NULL,
+    `status` enum('disponible','vendido') NOT NULL DEFAULT 'disponible',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 );
 ```
@@ -257,6 +275,12 @@ El funcionamiento del sistema comienza cuando el usuario accede al formulario de
 
 Una vez autenticado, el usuario puede acceder a distintas funcionalidades según su rol. Los administradores tienen acceso completo, incluyendo la gestión de usuarios, mientras que los empleados cuentan con permisos más limitados. Las acciones sobre los vehículos, como creación, modificación o eliminación, pasan por un proceso de validación antes de ser persistidas en la base de datos.
 
+En el alta y edición de vehículos, la imagen es opcional. Si el archivo excede 2MB o no cumple el formato (`jpg`, `jpeg`, `png`), el sistema muestra un mensaje de validación claro al usuario. Si no se sube imagen, la interfaz utiliza un recurso por defecto para mantener consistencia visual.
+
+Además, el estado comercial se captura desde formulario y se refleja en las grillas. Para preservar historial, los vehículos vendidos no se eliminan desde la interfaz de gestión, de modo que la información histórica se conserve para análisis posterior.
+
+El dashboard ahora presenta tarjetas de vehículos en venta con filtros y ordenamiento consistentes con el listado principal. Esto permite explorar oportunidades comerciales desde el panel sin perder contexto de búsqueda y navegación.
+
 El sistema mantiene el estado de navegación mediante parámetros de búsqueda, orden y paginación. Esto permite que los listados extensos puedan recorrerse sin perder el contexto de filtros aplicados ni el orden seleccionado por el usuario.
 
 > **Nota:** conservar el estado de navegación evita que cada cambio de página obligue a rehacer la búsqueda o el ordenamiento desde cero.
@@ -271,13 +295,21 @@ Un empleado accede al sistema escribiendo su email y su contraseña. El formular
 
 ### Alta de un vehículo por un administrador
 
-Un administrador carga un nuevo vehículo desde el formulario correspondiente. El sistema valida que los campos obligatorios estén completos, confirma que el año y el precio sean válidos, construye el objeto `Vehicle` y lo persiste mediante el repositorio. Luego muestra un mensaje de confirmación y vuelve al listado paginado.
+Un administrador carga un nuevo vehículo desde el formulario correspondiente. El sistema valida que los campos obligatorios estén completos, confirma que el año y el precio sean válidos y, de forma adicional, valida la imagen si se adjunta (máximo 2MB y formatos permitidos). Luego construye el objeto `Vehicle`, guarda el nombre de archivo en base de datos y persiste el registro mediante el repositorio. Finalmente muestra un mensaje de confirmación y vuelve al listado paginado.
 
 ---
 
 ## Funciones principales del CRUD
 
 La operación de crear recibe los datos del formulario, los valida y ejecuta un `INSERT` sobre la tabla correspondiente. La operación de lectura muestra listados, búsquedas y filtros con ordenamiento y paginación. La actualización localiza el registro por ID, valida los cambios y ejecuta un `UPDATE`. La eliminación verifica permisos y confirma la acción antes de ejecutar el `DELETE`.
+
+En el módulo de vehículos, el CRUD ahora contempla el ciclo completo de imágenes: durante la creación o edición se procesa el archivo, se genera un nombre único y se guarda en carpeta pública; cuando se reemplaza una imagen se elimina la anterior del servidor; y al eliminar un vehículo también se elimina su archivo asociado.
+
+Con la Fase 3, el CRUD incorpora reglas de estado: los registros vendidos permanecen en el sistema para mantener trazabilidad histórica y se prioriza su edición/consulta sobre su eliminación física.
+
+En Fase 4, la lectura se amplía con una vista de tarjetas paginada para vehículos disponibles, orientada a consulta rápida desde dashboard y pensada para futuras integraciones visuales de negocio.
+
+En Fase 5, la lectura/exportación incorpora un endpoint dedicado de descarga CSV con columnas acordadas: `Id`, `Tipo`, `Marca`, `Modelo`, `Año`, `Precio`, `Estado`. Este flujo preserva filtros actuales y mantiene control de permisos para evitar exportaciones por usuarios no autorizados.
 
 En vehículos, el sistema además conserva el contexto de búsqueda, orden y página actual, de modo que una modificación o un cambio de navegación no rompa la experiencia del usuario. Esa decisión resulta importante cuando la cantidad de registros crece y el listado empieza a requerir más control visual.
 

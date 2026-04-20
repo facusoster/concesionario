@@ -1,6 +1,17 @@
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
     <h2 class="h4 mb-0">Vehiculos</h2>
+    <?php
+    $csvParams = [
+        'q' => $q ?? '',
+        'status' => $status ?? '',
+        'sort' => $sort ?? 'id',
+        'dir' => $dir ?? 'desc',
+    ];
+    ?>
     <div class="d-flex flex-wrap gap-2">
+        <?php if (!empty($isAdmin)): ?>
+            <a class="btn btn-outline-success" href="vehicles_export_csv.php?<?php echo http_build_query($csvParams); ?>">Exportar CSV</a>
+        <?php endif; ?>
         <a class="btn btn-primary" href="vehicle_form.php">Agregar vehiculo</a>
         <a class="btn btn-outline-secondary" href="dashboard.php">Volver al panel</a>
     </div>
@@ -23,11 +34,20 @@
                 </select>
             </div>
 
+            <div class="col-12 col-md-2">
+                <label class="form-label" for="status">Estado</label>
+                <select class="form-select" id="status" name="status" onchange="this.form.submit()">
+                    <option value="" <?php echo ($status ?? '') === '' ? 'selected' : ''; ?>>Todos</option>
+                    <option value="disponible" <?php echo ($status ?? '') === 'disponible' ? 'selected' : ''; ?>>Disponible</option>
+                    <option value="vendido" <?php echo ($status ?? '') === 'vendido' ? 'selected' : ''; ?>>Vendido</option>
+                </select>
+            </div>
+
             <input type="hidden" name="sort" value="<?php echo htmlspecialchars($sort ?? 'id'); ?>">
             <input type="hidden" name="dir" value="<?php echo htmlspecialchars($dir ?? 'desc'); ?>">
             <input type="hidden" name="page" value="1">
 
-            <div class="col-12 col-md-4 d-flex gap-2">
+            <div class="col-12 col-md-2 d-flex gap-2">
                 <button class="btn btn-primary" type="submit">Filtrar</button>
                 <a class="btn btn-outline-secondary" href="vehicles.php">Limpiar</a>
             </div>
@@ -47,6 +67,7 @@
             <?php
             $baseParams = [
                 'q' => $q ?? '',
+                'status' => $status ?? '',
                 'perPage' => $perPage ?? 10,
             ];
             $sort = $sort ?? 'id';
@@ -62,35 +83,63 @@
             };
             ?>
             <th><a class="text-decoration-none" href="vehicles.php?<?php echo http_build_query(array_merge($baseParams, ['sort' => 'id', 'dir' => $toggleDir('id')])); ?>"><?php echo htmlspecialchars($sortLabel('id', 'ID')); ?></a></th>
+            <th>Imagen</th>
             <th><a class="text-decoration-none" href="vehicles.php?<?php echo http_build_query(array_merge($baseParams, ['sort' => 'type', 'dir' => $toggleDir('type')])); ?>"><?php echo htmlspecialchars($sortLabel('type', 'Tipo')); ?></a></th>
             <th><a class="text-decoration-none" href="vehicles.php?<?php echo http_build_query(array_merge($baseParams, ['sort' => 'brand', 'dir' => $toggleDir('brand')])); ?>"><?php echo htmlspecialchars($sortLabel('brand', 'Marca')); ?></a></th>
             <th><a class="text-decoration-none" href="vehicles.php?<?php echo http_build_query(array_merge($baseParams, ['sort' => 'model', 'dir' => $toggleDir('model')])); ?>"><?php echo htmlspecialchars($sortLabel('model', 'Modelo')); ?></a></th>
             <th><a class="text-decoration-none" href="vehicles.php?<?php echo http_build_query(array_merge($baseParams, ['sort' => 'year', 'dir' => $toggleDir('year')])); ?>"><?php echo htmlspecialchars($sortLabel('year', 'Año')); ?></a></th>
             <th><a class="text-decoration-none" href="vehicles.php?<?php echo http_build_query(array_merge($baseParams, ['sort' => 'price', 'dir' => $toggleDir('price')])); ?>"><?php echo htmlspecialchars($sortLabel('price', 'Precio')); ?></a></th>
+            <th><a class="text-decoration-none" href="vehicles.php?<?php echo http_build_query(array_merge($baseParams, ['sort' => 'status', 'dir' => $toggleDir('status')])); ?>"><?php echo htmlspecialchars($sortLabel('status', 'Estado')); ?></a></th>
             <th>Accion</th>
         </tr>
     </thead>
     <tbody>
         <?php if (empty($vehicles)): ?>
             <tr>
-                <td colspan="7">No se encontraron vehiculos con esos filtros.</td>
+                <td colspan="9">No se encontraron vehiculos con esos filtros.</td>
             </tr>
         <?php else: ?>
             <?php foreach ($vehicles as $v): ?>
+                <?php
+                $imageName = $v->getImageName();
+                $thumbUrl = $imageName
+                    ? 'uploads/vehicles/' . rawurlencode($imageName)
+                    : 'uploads/vehicles/default-vehicle.svg';
+                ?>
                 <tr>
                     <td><?php echo htmlspecialchars($v->getId()); ?></td>
+                    <td>
+                        <img
+                            src="<?php echo htmlspecialchars($thumbUrl); ?>"
+                            alt="Imagen del vehículo <?php echo htmlspecialchars((string)$v->getId()); ?>"
+                            style="width: 72px; height: 54px; object-fit: cover; border: 1px solid #dee2e6; border-radius: 0.375rem;"
+                        >
+                    </td>
                     <td><?php echo htmlspecialchars($v->getType()); ?></td>
                     <td><?php echo htmlspecialchars($v->getBrand()); ?></td>
                     <td><?php echo htmlspecialchars($v->getModel()); ?></td>
                     <td><?php echo htmlspecialchars($v->getYear()); ?></td>
                     <td><?php echo htmlspecialchars(number_format($v->getPrice(), 2)); ?></td>
-                    <td class="d-flex flex-wrap gap-2">
-                        <a class="btn btn-sm btn-outline-primary" href="vehicle_form.php?id=<?php echo urlencode($v->getId()); ?>">Editar</a>
-                        <form method="post" action="vehicle_process.php" class="d-inline" onsubmit="return confirm('¿Seguro que desea eliminar?');">
-                            <input type="hidden" name="action" value="delete">
-                            <input type="hidden" name="id" value="<?php echo htmlspecialchars($v->getId()); ?>">
-                            <button class="btn btn-sm btn-outline-danger" type="submit">Eliminar</button>
-                        </form>
+                    <td>
+                        <?php if ($v->getStatus() === 'vendido'): ?>
+                            <span class="badge text-bg-danger">Vendido</span>
+                        <?php else: ?>
+                            <span class="badge text-bg-success">Disponible</span>
+                        <?php endif; ?>
+                    </td>
+                    <td class="text-nowrap">
+                        <div class="d-inline-flex align-items-center gap-2">
+                            <a class="btn btn-sm btn-outline-primary" href="vehicle_form.php?id=<?php echo urlencode($v->getId()); ?>">Editar</a>
+                            <?php if ($v->getStatus() === 'vendido'): ?>
+                                <span class="badge text-bg-secondary">Historial</span>
+                            <?php else: ?>
+                                <form method="post" action="vehicle_process.php" class="m-0" onsubmit="return confirm('¿Seguro que desea eliminar?');">
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="id" value="<?php echo htmlspecialchars($v->getId()); ?>">
+                                    <button class="btn btn-sm btn-outline-danger" type="submit">Eliminar</button>
+                                </form>
+                            <?php endif; ?>
+                        </div>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -103,6 +152,7 @@
     <?php
     $paginationBase = [
         'q' => $q ?? '',
+        'status' => $status ?? '',
         'sort' => $sort ?? 'id',
         'dir' => $dir ?? 'desc',
         'perPage' => $perPage ?? 10,

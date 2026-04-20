@@ -7,7 +7,7 @@
 
 <div class="card shadow-sm">
     <div class="card-body">
-        <form method="post" action="vehicle_process.php" class="row g-3">
+        <form method="post" action="vehicle_process.php" class="row g-3" enctype="multipart/form-data">
             <input type="hidden" name="action" value="<?php echo $editing ? 'update' : 'create'; ?>">
             <?php if ($editing): ?>
                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($vehicle->getId()); ?>">
@@ -42,6 +42,44 @@
             <div class="col-12 col-md-3">
                 <label class="form-label" for="price">Precio <span class="required">*</span></label>
                 <input class="form-control" type="number" step="0.01" id="price" name="price" required value="<?php echo htmlspecialchars($price); ?>">
+            </div>
+
+            <div class="col-12 col-md-3">
+                <label class="form-label" for="status">Estado <span class="required">*</span></label>
+                <select class="form-select" id="status" name="status" required>
+                    <option value="disponible" <?php echo ($status ?? 'disponible') === 'disponible' ? 'selected' : ''; ?>>Disponible</option>
+                    <option value="vendido" <?php echo ($status ?? 'disponible') === 'vendido' ? 'selected' : ''; ?>>Vendido</option>
+                </select>
+            </div>
+
+            <?php
+            $currentImageName = ($editing && $vehicle) ? $vehicle->getImageName() : null;
+            $currentImageUrl = $currentImageName
+                ? 'uploads/vehicles/' . rawurlencode($currentImageName)
+                : 'uploads/vehicles/default-vehicle.svg';
+            ?>
+
+            <div class="col-12 col-md-6">
+                <label class="form-label" for="image">Imagen del vehículo</label>
+                <input
+                    class="form-control"
+                    type="file"
+                    id="image"
+                    name="image"
+                    accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+                >
+                <div class="form-text">Opcional. Máximo 2MB. Formatos permitidos: JPG, PNG.</div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <label class="form-label">Vista previa</label>
+                <div>
+                    <img
+                        src="<?php echo htmlspecialchars($currentImageUrl); ?>"
+                        alt="Imagen actual del vehículo"
+                        style="max-width: 180px; width: 100%; height: auto; border: 1px solid #dee2e6; border-radius: 0.5rem;"
+                    >
+                </div>
             </div>
 
             <div class="col-12">

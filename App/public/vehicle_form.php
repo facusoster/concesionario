@@ -29,6 +29,7 @@ $brand = $vehicle ? $vehicle->getBrand() : '';
 $model = $vehicle ? $vehicle->getModel() : '';
 $year = $vehicle ? $vehicle->getYear() : '';
 $price = $vehicle ? $vehicle->getPrice() : '';
+$status = $vehicle ? $vehicle->getStatus() : 'disponible';
 
 $oldVehicleForm = $_SESSION['old_vehicle_form'] ?? [];
 unset($_SESSION['old_vehicle_form']);
@@ -39,6 +40,7 @@ if (!empty($oldVehicleForm)) {
     $model = $oldVehicleForm['model'] ?? $model;
     $year = $oldVehicleForm['year'] ?? $year;
     $price = $oldVehicleForm['price'] ?? $price;
+    $status = $oldVehicleForm['status'] ?? $status;
 }
 
 $error = Flash::get('error') ?? '';
@@ -54,6 +56,7 @@ $contentData = [
     'model' => $model,
     'year' => $year,
     'price' => $price,
+    'status' => $status,
 ];
 
 require __DIR__ . '/../src/Views/layout/base.php';

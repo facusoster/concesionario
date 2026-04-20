@@ -14,6 +14,8 @@ class Vehicle extends Manageable {
     private ?string $model = null;
     private ?int $year = null;
     private ?float $price = null;
+    private ?string $imageName = null;
+    private string $status = 'disponible';
     
     // Miembro estático para conteo (contador)
     private static int $totalInstances = 0;
@@ -24,6 +26,10 @@ class Vehicle extends Manageable {
         $this->model = $data['model'] ?? null;
         $this->year  = isset($data['year']) ? (int)$data['year'] : null;
         $this->price = isset($data['price']) ? (float)$data['price'] : null;
+        $this->imageName = $data['image_name'] ?? null;
+        $this->status = in_array(($data['status'] ?? 'disponible'), ['disponible', 'vendido'], true)
+            ? (string)$data['status']
+            : 'disponible';
         if (isset($data['id'])) {
             $this->id = (int)$data['id'];
         }
@@ -57,6 +63,17 @@ class Vehicle extends Manageable {
         $this->price = $price;
     }
 
+    public function getImageName(): ?string { return $this->imageName; }
+    public function setImageName(?string $imageName): void { $this->imageName = $imageName; }
+
+    public function getStatus(): string { return $this->status; }
+    public function setStatus(string $status): void {
+        if (!in_array($status, ['disponible', 'vendido'], true)) {
+            throw new InvalidArgumentException('Estado inválido');
+        }
+        $this->status = $status;
+    }
+
     public static function getTotal(): int { return self::$totalInstances; }
 
     // Implementation of abstract method (Guardar -> save)
@@ -65,26 +82,30 @@ class Vehicle extends Manageable {
         try {
             $db = Database::getConnection();
             if ($this->id === null) {
-                $stmt = $db->prepare("INSERT INTO vehicles (type, brand, model, year, price) VALUES (:t, :b, :m, :y, :p)");
+                $stmt = $db->prepare("INSERT INTO vehicles (type, brand, model, year, price, image_name, status) VALUES (:t, :b, :m, :y, :p, :image_name, :status)");
                 $res = $stmt->execute([
                     ':t' => $this->type,
                     ':b' => $this->brand,
                     ':m' => $this->model,
                     ':y' => $this->year,
-                    ':p' => $this->price
+                    ':p' => $this->price,
+                    ':image_name' => $this->imageName,
+                    ':status' => $this->status,
                 ]);
                 if ($res) {
                     $this->id = (int)$db->lastInsertId();
                 }
                 return $res;
             } else {
-                $stmt = $db->prepare("UPDATE vehicles SET type = :t, brand = :b, model = :m, year = :y, price = :p WHERE id = :id");
+                $stmt = $db->prepare("UPDATE vehicles SET type = :t, brand = :b, model = :m, year = :y, price = :p, image_name = :image_name, status = :status WHERE id = :id");
                 return $stmt->execute([
                     ':t' => $this->type,
                     ':b' => $this->brand,
                     ':m' => $this->model,
                     ':y' => $this->year,
                     ':p' => $this->price,
+                    ':image_name' => $this->imageName,
+                    ':status' => $this->status,
                     ':id' => $this->id
                 ]);
             }

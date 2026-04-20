@@ -14,6 +14,8 @@ class VehicleRepository {
         'model' => 'model',
         'year' => 'year',
         'price' => 'price',
+        'image_name' => 'image_name',
+        'status' => 'status',
     ];
 
     public function __construct() {
@@ -41,7 +43,7 @@ class VehicleRepository {
      * Retorna vehículos filtrando por type, brand y model.
      * Si un filtro viene vacío, no se aplica.
      */
-    public function countByFilters(string $q = ''): int {
+    public function countByFilters(string $q = '', string $status = ''): int {
         try {
             $sql = 'SELECT COUNT(*) AS total FROM vehicles WHERE 1=1';
             $params = [];
@@ -51,6 +53,11 @@ class VehicleRepository {
                 $params[':q'] = '%' . $q . '%';
             }
 
+            if ($status !== '' && in_array($status, ['disponible', 'vendido'], true)) {
+                $sql .= ' AND status = :status';
+                $params[':status'] = $status;
+            }
+
             $stmt = $this->db->prepare($sql);
             $stmt->execute($params);
             return (int)$stmt->fetchColumn();
@@ -58,13 +65,14 @@ class VehicleRepository {
             Logger::error('Error SQL en countByFilters(Vehicle)', [
                 'method' => __METHOD__,
                 'q' => $q,
+                'status' => $status,
                 'exception' => $e->getMessage(),
             ]);
             throw new RepositoryException('No se pudo contar el listado de vehículos.', 0, $e);
         }
     }
 
-    public function getByFilters(string $q = '', string $sort = 'id', string $dir = 'desc', int $page = 1, int $perPage = 10): array {
+    public function getByFilters(string $q = '', string $status = '', string $sort = 'id', string $dir = 'desc', int $page = 1, int $perPage = 10): array {
         try {
             $sql = 'SELECT * FROM vehicles WHERE 1=1';
             $params = [];
@@ -72,6 +80,11 @@ class VehicleRepository {
             if ($q !== '') {
                 $sql .= ' AND (type LIKE :q OR brand LIKE :q OR model LIKE :q)';
                 $params[':q'] = '%' . $q . '%';
+            }
+
+            if ($status !== '' && in_array($status, ['disponible', 'vendido'], true)) {
+                $sql .= ' AND status = :status';
+                $params[':status'] = $status;
             }
 
             $sortColumn = $this->allowedSortColumns[$sort] ?? 'id';
@@ -92,6 +105,7 @@ class VehicleRepository {
             Logger::error('Error SQL en getByFilters(Vehicle)', [
                 'method' => __METHOD__,
                 'q' => $q,
+                'status' => $status,
                 'sort' => $sort,
                 'dir' => $dir,
                 'page' => $page,
@@ -99,6 +113,51 @@ class VehicleRepository {
                 'exception' => $e->getMessage(),
             ]);
             throw new RepositoryException('No se pudo consultar el listado de vehículos.', 0, $e);
+        }
+    }
+
+    /**
+     * Retorna todos los vehículos según filtros y orden, sin paginación.
+     * Útil para exportaciones.
+     */
+    public function getAllByFilters(string $q = '', string $status = '', string $sort = 'id', string $dir = 'desc'): array {
+        try {
+            $sql = 'SELECT * FROM vehicles WHERE 1=1';
+            $params = [];
+
+            if ($q !== '') {
+                $sql .= ' AND (type LIKE :q OR brand LIKE :q OR model LIKE :q)';
+                $params[':q'] = '%' . $q . '%';
+            }
+
+            if ($status !== '' && in_array($status, ['disponible', 'vendido'], true)) {
+                $sql .= ' AND status = :status';
+                $params[':status'] = $status;
+            }
+
+            $sortColumn = $this->allowedSortColumns[$sort] ?? 'id';
+            $sortDirection = strtolower($dir) === 'asc' ? 'ASC' : 'DESC';
+            $sql .= ' ORDER BY ' . $sortColumn . ' ' . $sortDirection;
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $list = [];
+            foreach ($rows as $r) {
+                $list[] = Vehicle::fromArray($r);
+            }
+            return $list;
+        } catch (PDOException $e) {
+            Logger::error('Error SQL en getAllByFilters(Vehicle)', [
+                'method' => __METHOD__,
+                'q' => $q,
+                'status' => $status,
+                'sort' => $sort,
+                'dir' => $dir,
+                'exception' => $e->getMessage(),
+            ]);
+            throw new RepositoryException('No se pudo generar la exportación de vehículos.', 0, $e);
         }
     }
 
@@ -124,26 +183,30 @@ class VehicleRepository {
     public function save(Vehicle $vehicle): bool {
         try {
             if ($vehicle->getId() === null) {
-                $stmt = $this->db->prepare('INSERT INTO vehicles (type, brand, model, year, price) VALUES (:type, :brand, :model, :year, :price)');
+                $stmt = $this->db->prepare('INSERT INTO vehicles (type, brand, model, year, price, image_name, status) VALUES (:type, :brand, :model, :year, :price, :image_name, :status)');
                 $res = $stmt->execute([
                     ':type' => $vehicle->getType(),
                     ':brand' => $vehicle->getBrand(),
                     ':model' => $vehicle->getModel(),
                     ':year' => $vehicle->getYear(),
                     ':price' => $vehicle->getPrice(),
+                    ':image_name' => $vehicle->getImageName(),
+                    ':status' => $vehicle->getStatus(),
                 ]);
                 if ($res) {
                     $vehicle->setId((int)$this->db->lastInsertId());
                 }
                 return $res;
             } else {
-                $stmt = $this->db->prepare('UPDATE vehicles SET type = :type, brand = :brand, model = :model, year = :year, price = :price WHERE id = :id');
+                $stmt = $this->db->prepare('UPDATE vehicles SET type = :type, brand = :brand, model = :model, year = :year, price = :price, image_name = :image_name, status = :status WHERE id = :id');
                 return $stmt->execute([
                     ':type' => $vehicle->getType(),
                     ':brand' => $vehicle->getBrand(),
                     ':model' => $vehicle->getModel(),
                     ':year' => $vehicle->getYear(),
                     ':price' => $vehicle->getPrice(),
+                    ':image_name' => $vehicle->getImageName(),
+                    ':status' => $vehicle->getStatus(),
                     ':id' => $vehicle->getId(),
                 ]);
             }
