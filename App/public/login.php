@@ -1,6 +1,12 @@
 <?php
 // Simple login form (formulario de login)
 // Archivo público: public/login.php
+
+require_once __DIR__ . '/../config/app.php';
+require_once __DIR__ . '/../core/Flash.php';
+
+$message = Flash::get('success') ?? Flash::get('info') ?? '';
+$error = Flash::get('error') ?? '';
 ?>
 <!doctype html>
 <html lang="es">
@@ -20,11 +26,11 @@
 <body>
     <div class="container">
         <h1>Login</h1>
-        <?php if (!empty($_GET['message'])): ?>
-            <p class="info"><?php echo htmlspecialchars($_GET['message']); ?></p>
+        <?php if (!empty($message)): ?>
+            <p class="info"><?php echo htmlspecialchars($message); ?></p>
         <?php endif; ?>
-        <?php if (!empty($_GET['error'])): ?>
-            <p class="error"><?php echo htmlspecialchars($_GET['error']); ?></p>
+        <?php if (!empty($error)): ?>
+            <p class="error"><?php echo htmlspecialchars($error); ?></p>
         <?php endif; ?>
 
         <form method="post" action="login_process.php">

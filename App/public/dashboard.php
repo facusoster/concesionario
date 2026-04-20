@@ -2,6 +2,9 @@
 // Dashboard sencillo con control de acceso por rol
 // public/dashboard.php
 
+// Cargar configuración centralizada
+require_once __DIR__ . '/../config/app.php';
+
 session_start();
 
 // Si no hay sesión activa, redirigir al login

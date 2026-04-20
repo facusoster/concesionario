@@ -1,5 +1,9 @@
 <?php
 // Formulario para crear/editar vehículos
+
+// Cargar configuración centralizada
+require_once __DIR__ . '/../config/app.php';
+
 session_start();
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
@@ -7,6 +11,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 require_once __DIR__ . '/../src/Repositories/vehicle_repository.php';
+require_once __DIR__ . '/../core/Flash.php';
 
 $repo = new VehicleRepository();
 $vehicle = null;
@@ -25,7 +30,18 @@ $model = $vehicle ? $vehicle->getModel() : '';
 $year = $vehicle ? $vehicle->getYear() : '';
 $price = $vehicle ? $vehicle->getPrice() : '';
 
-$error = $_GET['error'] ?? '';
+$oldVehicleForm = $_SESSION['old_vehicle_form'] ?? [];
+unset($_SESSION['old_vehicle_form']);
+
+if (!empty($oldVehicleForm)) {
+    $type = $oldVehicleForm['type'] ?? $type;
+    $brand = $oldVehicleForm['brand'] ?? $brand;
+    $model = $oldVehicleForm['model'] ?? $model;
+    $year = $oldVehicleForm['year'] ?? $year;
+    $price = $oldVehicleForm['price'] ?? $price;
+}
+
+$error = Flash::get('error') ?? '';
 ?>
 <!doctype html>
 <html lang="es">

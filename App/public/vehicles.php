@@ -1,5 +1,9 @@
 <?php
 // Listado de vehículos
+
+// Cargar configuración centralizada
+require_once __DIR__ . '/../config/app.php';
+
 session_start();
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
@@ -7,6 +11,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 require_once __DIR__ . '/../src/Repositories/vehicle_repository.php';
+require_once __DIR__ . '/../core/Flash.php';
 
 $repo = new VehicleRepository();
 $typeFilter = trim($_GET['type'] ?? '');
@@ -15,8 +20,8 @@ $modelFilter = trim($_GET['model'] ?? '');
 
 $vehicles = $repo->getByFilters($typeFilter, $brandFilter, $modelFilter);
 
-$message = $_GET['message'] ?? '';
-$error = $_GET['error'] ?? '';
+$message = Flash::get('success') ?? Flash::get('info') ?? '';
+$error = Flash::get('error') ?? '';
 ?>
 <!doctype html>
 <html lang="es">

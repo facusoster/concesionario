@@ -2,10 +2,14 @@
 // Procesador de login
 // public/login_process.php
 
+// Cargar configuración centralizada
+require_once __DIR__ . '/../config/app.php';
+
 session_start();
 
 require_once __DIR__ . '/../src/Repositories/user_repository.php';
 require_once __DIR__ . '/../src/Models/user.php';
+require_once __DIR__ . '/../core/Flash.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: login.php');
@@ -17,7 +21,8 @@ $password = $_POST['password'] ?? '';
 
 if ($email === '' || $password === '') {
     $msg = 'Email y password son requeridos.';
-    header('Location: login.php?error=' . rawurlencode($msg));
+    Flash::error($msg);
+    header('Location: login.php');
     exit;
 }
 
@@ -26,14 +31,16 @@ try {
     $user = $repo->findByEmail($email);
     if ($user === null) {
         $msg = 'Usuario no encontrado.';
-        header('Location: login.php?error=' . rawurlencode($msg));
+        Flash::error($msg);
+        header('Location: login.php');
         exit;
     }
 
     $hashed = $user->getHashedPassword();
     if ($hashed === null || !password_verify($password, $hashed)) {
         $msg = 'Credenciales incorrectas.';
-        header('Location: login.php?error=' . rawurlencode($msg));
+        Flash::error($msg);
+        header('Location: login.php');
         exit;
     }
 
@@ -48,6 +55,7 @@ try {
 } catch (Exception $e) {
     error_log($e->getMessage());
     $msg = 'Error interno, vea logs.';
-    header('Location: login.php?error=' . rawurlencode($msg));
+    Flash::error($msg);
+    header('Location: login.php');
     exit;
 }

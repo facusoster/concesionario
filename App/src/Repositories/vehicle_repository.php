@@ -1,6 +1,8 @@
 <?php
 
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../core/Logger.php';
+require_once __DIR__ . '/../Exceptions/RepositoryException.php';
 require_once __DIR__ . '/../Models/Vehicle.php';
 
 class VehicleRepository {
@@ -77,8 +79,12 @@ class VehicleRepository {
             if (!$row) return null;
             return Vehicle::fromArray($row);
         } catch (PDOException $e) {
-            error_log($e->getMessage());
-            return null;
+            Logger::error('Error SQL en findById(Vehicle)', [
+                'method' => __METHOD__,
+                'id' => $id,
+                'exception' => $e->getMessage(),
+            ]);
+            throw new RepositoryException('No se pudo consultar el vehículo por id.', 0, $e);
         }
     }
 
@@ -110,8 +116,12 @@ class VehicleRepository {
                 ]);
             }
         } catch (PDOException $e) {
-            error_log($e->getMessage());
-            return false;
+            Logger::error('Error SQL en save(Vehicle)', [
+                'method' => __METHOD__,
+                'vehicleId' => $vehicle->getId(),
+                'exception' => $e->getMessage(),
+            ]);
+            throw new RepositoryException('No se pudo guardar el vehículo en base de datos.', 0, $e);
         }
     }
 
@@ -121,8 +131,12 @@ class VehicleRepository {
             $stmt = $this->db->prepare('DELETE FROM vehicles WHERE id = :id');
             return $stmt->execute([':id' => $id]);
         } catch (PDOException $e) {
-            error_log($e->getMessage());
-            return false;
+            Logger::error('Error SQL en delete(Vehicle)', [
+                'method' => __METHOD__,
+                'id' => $id,
+                'exception' => $e->getMessage(),
+            ]);
+            throw new RepositoryException('No se pudo eliminar el vehículo en base de datos.', 0, $e);
         }
     }
 }

@@ -2,6 +2,10 @@
 // Logout script: destruye la sesión y redirige al login
 // public/logout.php
 
+// Cargar configuración centralizada
+require_once __DIR__ . '/../config/app.php';
+require_once __DIR__ . '/../core/Flash.php';
+
 session_start();
 
 // Limpiar y destruir la sesión si existe
@@ -23,5 +27,7 @@ if (session_status() === PHP_SESSION_ACTIVE) {
 }
 
 // Redirigir al formulario de login con mensaje
-header('Location: login.php?message=' . rawurlencode('Sesión cerrada correctamente.'));
+session_start();
+Flash::info('Sesión cerrada correctamente.');
+header('Location: login.php');
 exit;

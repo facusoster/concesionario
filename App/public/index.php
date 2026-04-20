@@ -1,5 +1,13 @@
 <?php
 
+// Cargar configuración centralizada
+require_once __DIR__ . '/../config/app.php';
+
+// Iniciar sesión
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+
 $controller = strtolower($_GET['controller'] ?? '');
 $action = strtolower($_GET['action'] ?? 'index');
 

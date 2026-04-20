@@ -1,6 +1,8 @@
 <?php
 
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../core/Logger.php';
+require_once __DIR__ . '/../Exceptions/RepositoryException.php';
 require_once __DIR__ . '/../Models/user.php';
 
 /**
@@ -25,8 +27,12 @@ class UserRepository {
             if (!$row) return null;
             return User::fromArray($row);
         } catch (PDOException $e) {
-            error_log($e->getMessage());
-            return null;
+            Logger::error('Error SQL en findByEmail', [
+                'method' => __METHOD__,
+                'email' => $email,
+                'exception' => $e->getMessage(),
+            ]);
+            throw new RepositoryException('No se pudo consultar el usuario por email.', 0, $e);
         }
     }
 
@@ -89,8 +95,12 @@ class UserRepository {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             return $row ?: null;
         } catch (PDOException $e) {
-            error_log($e->getMessage());
-            return null;
+            Logger::error('Error SQL en findById(User)', [
+                'method' => __METHOD__,
+                'id' => $id,
+                'exception' => $e->getMessage(),
+            ]);
+            throw new RepositoryException('No se pudo consultar el usuario por id.', 0, $e);
         }
     }
 
@@ -124,8 +134,12 @@ class UserRepository {
                 ':id' => $id,
             ]);
         } catch (PDOException $e) {
-            error_log($e->getMessage());
-            return false;
+            Logger::error('Error SQL en updateBasic', [
+                'method' => __METHOD__,
+                'id' => $id,
+                'exception' => $e->getMessage(),
+            ]);
+            throw new RepositoryException('No se pudo actualizar el usuario en base de datos.', 0, $e);
         }
     }
 
@@ -137,8 +151,12 @@ class UserRepository {
             $stmt = $this->db->prepare('DELETE FROM users WHERE id = :id');
             return $stmt->execute([':id' => $id]);
         } catch (PDOException $e) {
-            error_log($e->getMessage());
-            return false;
+            Logger::error('Error SQL en deleteById', [
+                'method' => __METHOD__,
+                'id' => $id,
+                'exception' => $e->getMessage(),
+            ]);
+            throw new RepositoryException('No se pudo eliminar el usuario en base de datos.', 0, $e);
         }
     }
 
@@ -174,8 +192,13 @@ class UserRepository {
                 return true;
             }
         } catch (PDOException $e) {
-            error_log($e->getMessage());
-            return false;
+            Logger::error('Error SQL en save(User)', [
+                'method' => __METHOD__,
+                'userId' => $user->getId(),
+                'userEmail' => $user->getEmail(),
+                'exception' => $e->getMessage(),
+            ]);
+            throw new RepositoryException('No se pudo guardar el usuario en base de datos.', 0, $e);
         }
     }
 }
