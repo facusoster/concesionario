@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>README.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> or <div class="page"></div> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="sistema-de-gestión-para-agencia-de-autos">Sistema de Gestión para Agencia de Autos</h1>
+<hr>
+<h2 id="carátula">Carátula</h2>
+<p><strong>Universidad:</strong> Escuela DaVinci<br>
+<strong>Materia:</strong> Producción Web<br>
+<strong>Profesor:</strong> Calderón Nicolás Ariel<br>
+<strong>Alumno:</strong> Soster Facundo Nahuel<br>
+<strong>Trabajo Práctico Parcial:</strong> Sistema de Gestión para Agencia de Autos</p>
+<hr>
+<h2 id="índice">Índice</h2>
+<ul>
+<li><a href="#sistema-de-gesti%C3%B3n-para-agencia-de-autos">Sistema de Gestión para Agencia de Autos</a>
+<ul>
+<li><a href="#car%C3%A1tula">Carátula</a></li>
+<li><a href="#%C3%ADndice">Índice</a></li>
+<li><a href="#introducci%C3%B3n">Introducción</a></li>
+<li><a href="#arquitectura-del-sistema">Arquitectura del sistema</a>
+<ul>
+<li><a href="#diagrama-de-capas">Diagrama de capas</a></li>
+</ul>
+</li>
+<li><a href="#modelo-de-dominio">Modelo de dominio</a></li>
+<li><a href="#persistencia-de-datos">Persistencia de datos</a></li>
+<li><a href="#base-de-datos">Base de datos</a></li>
+<li><a href="#checklist-del-parcial">Checklist del parcial</a></li>
+<li><a href="#checklist-de-mejoras">Checklist de mejoras</a></li>
+<li><a href="#flujo-de-funcionamiento">Flujo de funcionamiento</a></li>
+<li><a href="#casos-de-uso">Casos de uso</a>
+<ul>
+<li><a href="#ingreso-de-un-empleado">Ingreso de un empleado</a></li>
+<li><a href="#alta-de-un-veh%C3%ADculo-por-un-administrador">Alta de un vehículo por un administrador</a></li>
+</ul>
+</li>
+<li><a href="#funciones-principales-del-crud">Funciones principales del CRUD</a></li>
+<li><a href="#conclusi%C3%B3n">Conclusión</a></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="introducción">Introducción</h2>
+<p>El presente proyecto consiste en el desarrollo de una aplicación web orientada a la gestión de una agencia de autos, implementada en PHP utilizando Programación Orientada a Objetos y acceso a datos mediante PDO. El sistema permite la autenticación de usuarios, la diferenciación de roles y la administración completa de vehículos mediante operaciones CRUD, manteniendo una separación clara entre lógica de negocio, acceso a datos y presentación.</p>
+<p>El objetivo principal es aplicar conceptos fundamentales de desarrollo backend, priorizando la organización del código, la seguridad en el manejo de datos y la escalabilidad de la aplicación. A lo largo del trabajo se implementaron mecanismos de validación, control de permisos, mensajes flash, manejo de errores y una interfaz visual uniforme para que el sistema pueda ser entendido, mantenido y ampliado con facilidad.</p>
+<blockquote>
+<p><strong>Nota:</strong> en el código las clases se llaman <code>User</code> y <code>Vehicle</code>, aunque en la consigna se mencionan como <code>Usuario</code> y <code>Vehiculo</code>. La terminología cambia, pero la intención del modelo es la misma.</p>
+</blockquote>
+<hr>
+<h2 id="arquitectura-del-sistema">Arquitectura del sistema</h2>
+<p>La aplicación está estructurada siguiendo una separación de responsabilidades que divide el sistema en capas bien definidas. Los controladores reciben las solicitudes del usuario y coordinan las acciones del sistema; los repositorios gestionan la interacción con la base de datos encapsulando las consultas SQL; y las vistas se encargan de la presentación de la información al usuario. Esta organización evita la mezcla de lógica de negocio con HTML o consultas SQL, lo que facilita el mantenimiento y la evolución del sistema.</p>
+<p>La estructura de carpetas refleja esta separación. En <code>App/core/</code> se encuentran utilidades transversales como autenticación, flash messages, logger y el controlador base. En <code>App/src/Models/</code> están las clases de dominio. En <code>App/src/Repositories/</code> se concentra la persistencia. En <code>App/src/Controllers/</code> se resuelven los flujos de cada módulo. Finalmente, en <code>App/src/Views/</code> se ubica la presentación compartida y las pantallas específicas.</p>
+<p>Esta arquitectura permite que cada componente cumpla una sola responsabilidad. El resultado es una base de código más legible, más fácil de depurar y menos propensa a generar dependencias innecesarias entre capas.</p>
+<blockquote>
+<p><strong>Nota:</strong> cuando una aplicación crece, esta separación evita que el proyecto termine convertido en archivos largos donde el HTML, el SQL y la lógica de negocio quedan mezclados.</p>
+</blockquote>
+<h3 id="diagrama-de-capas">Diagrama de capas</h3>
+<p>El siguiente esquema resume el recorrido principal de la aplicación desde la interfaz hasta la base de datos.</p>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart TB
+    A["Presentación\n(Views / HTML)"] --> B["Controladores\n(Controllers)"]
+    B --> C["Lógica de negocio\n(Models / Entities)"]
+    C --> D["Acceso a datos\n(Repositories / PDO)"]
+    D --> E["Base de datos\n(MySQL)"]
+
+    E --> D
+    D --> C
+    C --> B
+    B --> A
+</div></code></pre>
+<blockquote>
+<p><strong>Nota:</strong> el diagrama representa el flujo principal de una petición. El usuario interactúa con la vista, el controlador coordina la acción, el modelo resuelve la lógica y el repositorio llega a la base de datos.</p>
+</blockquote>
+<hr>
+<h2 id="modelo-de-dominio">Modelo de dominio</h2>
+<p>El diseño del sistema se basa en los principios de la Programación Orientada a la Objetos. La jerarquía de usuarios está representada por una clase base abstracta y dos especializaciones concretas: <code>Employee</code> y <code>Administrator</code>. Esa estructura permite compartir comportamiento común y, al mismo tiempo, establecer diferencias de permisos y responsabilidades según el rol.</p>
+<pre class="hljs"><code><div><span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">Authenticable</span> </span>{
+    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">login</span>(<span class="hljs-params"><span class="hljs-keyword">string</span> <span class="hljs-variable">$email</span>, <span class="hljs-keyword">string</span> <span class="hljs-variable">$password</span></span>): <span class="hljs-title">bool</span></span>;
+    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">logout</span>(<span class="hljs-params"></span>): <span class="hljs-title">void</span></span>;
+}
+
+<span class="hljs-keyword">abstract</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Authenticable</span> </span>{
+    <span class="hljs-keyword">protected</span> ?<span class="hljs-keyword">int</span> <span class="hljs-variable">$id</span> = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">string</span> <span class="hljs-variable">$name</span>;
+    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">string</span> <span class="hljs-variable">$email</span>;
+    <span class="hljs-keyword">protected</span> ?<span class="hljs-keyword">string</span> <span class="hljs-variable">$password</span> = <span class="hljs-literal">null</span>;
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Employee</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">User</span> </span>{
+    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getRole</span>(<span class="hljs-params"></span>): <span class="hljs-title">string</span> </span>{ <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;employee&#x27;</span>; }
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Administrator</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">User</span> </span>{
+    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getRole</span>(<span class="hljs-params"></span>): <span class="hljs-title">string</span> </span>{ <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;admin&#x27;</span>; }
+}
+</div></code></pre>
+<p>La interface <code>Authenticable</code> funciona como contrato, ya que obliga a implementar métodos de autenticación. La clase abstracta <code>User</code>, en cambio, centraliza atributos y comportamientos compartidos. Sobre esa base se derivan los roles concretos que utiliza el sistema en sus reglas de acceso.</p>
+<p>En el caso de los vehículos, se modela una entidad con encapsulamiento completo. La clase <code>Vehicle</code> concentra atributos como tipo, marca, modelo, año y precio, y los protege mediante getters y setters. Además, incorpora una clase abstracta auxiliar y un contador estático para reforzar los conceptos pedidos en la consigna.</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">abstract</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Manageable</span> </span>{
+    <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">save</span>(<span class="hljs-params"></span>): <span class="hljs-title">bool</span></span>;
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Vehicle</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Manageable</span> </span>{
+    <span class="hljs-keyword">private</span> ?<span class="hljs-keyword">int</span> <span class="hljs-variable">$id</span> = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">private</span> ?<span class="hljs-keyword">string</span> <span class="hljs-variable">$type</span> = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">private</span> ?<span class="hljs-keyword">string</span> <span class="hljs-variable">$brand</span> = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">private</span> ?<span class="hljs-keyword">string</span> <span class="hljs-variable">$model</span> = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">private</span> ?<span class="hljs-keyword">int</span> <span class="hljs-variable">$year</span> = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">private</span> ?<span class="hljs-keyword">float</span> <span class="hljs-variable">$price</span> = <span class="hljs-literal">null</span>;
+
+    <span class="hljs-keyword">private</span> <span class="hljs-built_in">static</span> <span class="hljs-keyword">int</span> <span class="hljs-variable">$totalInstances</span> = <span class="hljs-number">0</span>;
+}
+</div></code></pre>
+<blockquote>
+<p><strong>Nota:</strong> el uso de propiedades privadas obliga a acceder a los datos mediante métodos. Eso evita que una parte de la aplicación modifique un valor de forma directa sin pasar por validaciones.</p>
+</blockquote>
+<p>También se aplica encapsulamiento en los setters, especialmente en campos sensibles como el precio.</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setPrice</span>(<span class="hljs-params"><span class="hljs-keyword">float</span> <span class="hljs-variable">$price</span></span>): <span class="hljs-title">void</span> </span>{
+    <span class="hljs-keyword">if</span> (<span class="hljs-variable">$price</span> &lt; <span class="hljs-number">0</span>) {
+        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">InvalidArgumentException</span>(<span class="hljs-string">&#x27;Precio inválido&#x27;</span>);
+    }
+    <span class="hljs-variable language_">$this</span>-&gt;price = <span class="hljs-variable">$price</span>;
+}
+</div></code></pre>
+<p>Este enfoque protege el objeto y evita estados incoherentes dentro del sistema.</p>
+<hr>
+<h2 id="persistencia-de-datos">Persistencia de datos</h2>
+<p>La comunicación con la base de datos se realiza mediante PDO, lo que permite trabajar con sentencias preparadas y manejar errores de forma controlada. Esta decisión mejora la seguridad del sistema porque evita la concatenación directa de datos en consultas SQL y reduce el riesgo de inyección SQL.</p>
+<p>El repositorio de usuarios y el repositorio de vehículos encapsulan las consultas más importantes. Por ejemplo, el login consulta por email y luego delega la validación de la contraseña al mecanismo seguro de <code>password_verify()</code>.</p>
+<pre class="hljs"><code><div><span class="hljs-variable">$stmt</span> = <span class="hljs-variable">$pdo</span>-&gt;<span class="hljs-title function_ invoke__">prepare</span>(<span class="hljs-string">&#x27;SELECT * FROM users WHERE email = :email LIMIT 1&#x27;</span>);
+<span class="hljs-variable">$stmt</span>-&gt;<span class="hljs-title function_ invoke__">execute</span>([<span class="hljs-string">&#x27;:email&#x27;</span> =&gt; <span class="hljs-variable">$email</span>]);
+</div></code></pre>
+<p>Una vez recuperado el registro, la sesión se arma únicamente si la contraseña coincide.</p>
+<pre class="hljs"><code><div><span class="hljs-variable">$hashed</span> = <span class="hljs-variable">$user</span>-&gt;<span class="hljs-title function_ invoke__">getHashedPassword</span>();
+<span class="hljs-keyword">if</span> (<span class="hljs-variable">$hashed</span> === <span class="hljs-literal">null</span> || !<span class="hljs-title function_ invoke__">password_verify</span>(<span class="hljs-variable">$password</span>, <span class="hljs-variable">$hashed</span>)) {
+    <span class="hljs-title class_">Flash</span>::<span class="hljs-title function_ invoke__">error</span>(<span class="hljs-string">&#x27;Credenciales incorrectas.&#x27;</span>);
+    <span class="hljs-title function_ invoke__">header</span>(<span class="hljs-string">&#x27;Location: login.php&#x27;</span>);
+    <span class="hljs-keyword">exit</span>;
+}
+
+<span class="hljs-variable">$_SESSION</span>[<span class="hljs-string">&#x27;user_id&#x27;</span>] = <span class="hljs-variable">$user</span>-&gt;<span class="hljs-title function_ invoke__">getId</span>();
+<span class="hljs-variable">$_SESSION</span>[<span class="hljs-string">&#x27;user_name&#x27;</span>] = <span class="hljs-variable">$user</span>-&gt;<span class="hljs-title function_ invoke__">getName</span>();
+<span class="hljs-variable">$_SESSION</span>[<span class="hljs-string">&#x27;role&#x27;</span>] = <span class="hljs-variable">$user</span>-&gt;<span class="hljs-title function_ invoke__">getRole</span>();
+</div></code></pre>
+<blockquote>
+<p><strong>Nota:</strong> la contraseña nunca se compara en texto plano. Primero se almacena con hash y después se valida con <code>password_verify()</code>.</p>
+</blockquote>
+<p>Las operaciones de alta, modificación y eliminación de vehículos también se ejecutan con consultas preparadas. De este modo, los datos ingresados por formulario no se mezclan con la sentencia SQL y el acceso a datos queda controlado por una capa específica.</p>
+<hr>
+<h2 id="base-de-datos">Base de datos</h2>
+<p>El sistema utiliza una base de datos denominada <code>concesionario</code>, cuyo archivo de carga se encuentra en <a href="database/concesionario.sql">App/database/concesionario.sql</a>. Ese archivo contiene la estructura completa de la base junto con datos de prueba para usuarios y vehículos.</p>
+<p>La base está compuesta principalmente por dos tablas. La tabla <code>users</code> almacena la información de los usuarios del sistema, incluyendo nombre, correo electrónico, contraseña encriptada y rol. El rol permite distinguir entre empleados y administradores, lo que impacta directamente en los permisos dentro de la aplicación. La tabla <code>vehicles</code> contiene la información de los vehículos disponibles en la agencia, con campos para tipo, marca, modelo, año, precio y fecha de creación.</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">CREATE TABLE</span> `users` (
+  `id` <span class="hljs-type">int</span>(<span class="hljs-number">10</span>) UNSIGNED <span class="hljs-keyword">NOT NULL</span>,
+  `name` <span class="hljs-type">varchar</span>(<span class="hljs-number">100</span>) <span class="hljs-keyword">NOT NULL</span>,
+  `email` <span class="hljs-type">varchar</span>(<span class="hljs-number">150</span>) <span class="hljs-keyword">NOT NULL</span>,
+  `password` <span class="hljs-type">varchar</span>(<span class="hljs-number">255</span>) <span class="hljs-keyword">NOT NULL</span>,
+  `role` enum(<span class="hljs-string">&#x27;employee&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>) <span class="hljs-keyword">NOT NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-string">&#x27;employee&#x27;</span>,
+  `created_at` <span class="hljs-type">timestamp</span> <span class="hljs-keyword">NOT NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">current_timestamp</span>()
+);
+</div></code></pre>
+<pre class="hljs"><code><div><span class="hljs-keyword">CREATE TABLE</span> `vehicles` (
+  `id` <span class="hljs-type">int</span>(<span class="hljs-number">10</span>) UNSIGNED <span class="hljs-keyword">NOT NULL</span>,
+  `type` <span class="hljs-type">varchar</span>(<span class="hljs-number">50</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span>,
+  `brand` <span class="hljs-type">varchar</span>(<span class="hljs-number">100</span>) <span class="hljs-keyword">NOT NULL</span>,
+  `model` <span class="hljs-type">varchar</span>(<span class="hljs-number">100</span>) <span class="hljs-keyword">NOT NULL</span>,
+  `<span class="hljs-keyword">year</span>` <span class="hljs-type">smallint</span>(<span class="hljs-number">5</span>) UNSIGNED <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span>,
+  `price` <span class="hljs-type">decimal</span>(<span class="hljs-number">10</span>,<span class="hljs-number">2</span>) <span class="hljs-keyword">NOT NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-number">0.00</span>,
+  `created_at` <span class="hljs-type">timestamp</span> <span class="hljs-keyword">NOT NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">current_timestamp</span>()
+);
+</div></code></pre>
+<p>Las claves primarias de ambas tablas utilizan <code>AUTO_INCREMENT</code>, lo que simplifica la inserción de registros nuevos. Además, el campo <code>email</code> en <code>users</code> se mantiene único para evitar duplicados en la autenticación.</p>
+<p>La relación entre ambas tablas no es directa, pero el sistema utiliza la información de <code>users</code> para controlar quién puede realizar determinadas acciones sobre los vehículos. Esa decisión responde a la lógica de permisos, no a una asociación de datos entre entidades.</p>
+<blockquote>
+<p><strong>Advertencia:</strong> si se vuelve a importar el archivo SQL sobre una base ya cargada, pueden duplicarse registros. Para pruebas limpias conviene vaciar o recrear las tablas antes de volver a ejecutar el dump.</p>
+</blockquote>
+<hr>
+<h2 id="checklist-del-parcial">Checklist del parcial</h2>
+<p>El parcial se encuentra cubierto en sus puntos principales. La clase <code>Vehicle</code> resuelve la representación de los vehículos con propiedades privadas y métodos de acceso. La jerarquía <code>User</code> → <code>Employee</code> y <code>User</code> → <code>Administrator</code> implementa la herencia requerida. La interface <code>Authenticable</code> y la clase abstracta <code>Manageable</code> cubren la exigencia de usar al menos una abstracción formal. También se incorporaron miembros estáticos, login con sesiones, validación con <code>password_verify()</code>, CRUD de vehículos con PDO y tabla HTML para los listados.</p>
+<p>El acceso a la gestión de usuarios está restringido exclusivamente a administradores mediante el helper <code>Auth::requireAdmin()</code>. Esa decisión evita exponer funcionalidades de administración a perfiles sin permisos. En paralelo, el sistema presenta los vehículos en una tabla HTML con acciones de edición y eliminación, lo que completa la parte visible del CRUD.</p>
+<pre class="hljs"><code><div><span class="hljs-title class_">Auth</span>::<span class="hljs-title function_ invoke__">requireAdmin</span>();
+</div></code></pre>
+<pre class="hljs"><code><div>&lt;table <span class="hljs-class"><span class="hljs-keyword">class</span>=&quot;<span class="hljs-title">table</span> <span class="hljs-title">table</span>-<span class="hljs-title">striped</span> <span class="hljs-title">table</span>-<span class="hljs-title">hover</span> <span class="hljs-title">align</span>-<span class="hljs-title">middle</span>&quot;&gt;
+</span></div></code></pre>
+<blockquote>
+<p><strong>Nota:</strong> el cumplimiento no depende solo de que existan los archivos, sino de que el flujo completo funcione de manera coherente entre login, permisos, persistencia y vistas.</p>
+</blockquote>
+<hr>
+<h2 id="checklist-de-mejoras">Checklist de mejoras</h2>
+<p>El proyecto también incorpora varias mejoras que elevan la calidad del trabajo. Se definieron excepciones personalizadas por dominio, se agregaron bloques <code>try/catch/finally</code> en operaciones críticas, se centralizó el control de permisos y se unificó el sistema de mensajes mediante flash messages. Además, los errores técnicos se registran en logs y no se muestran directamente al usuario.</p>
+<p>La aplicación también utiliza un manejador global de errores para unificar la respuesta ante fallos y dispone de un layout compartido que evita repetir encabezado, navegación y pie en todas las vistas. A eso se suma búsqueda global, ordenamiento por columnas, paginación en usuarios y vehículos, y una interfaz visual mejorada con Bootstrap.</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">try</span> {
+    <span class="hljs-comment">// operación crítica</span>
+} <span class="hljs-keyword">catch</span> (ValidationException <span class="hljs-variable">$e</span>) {
+    <span class="hljs-title class_">Flash</span>::<span class="hljs-title function_ invoke__">error</span>(<span class="hljs-variable">$e</span>-&gt;<span class="hljs-title function_ invoke__">getMessage</span>());
+} <span class="hljs-keyword">finally</span> {
+    <span class="hljs-comment">// punto de extensión para trazabilidad adicional</span>
+}
+</div></code></pre>
+<pre class="hljs"><code><div><span class="hljs-title function_ invoke__">set_error_handler</span>([<span class="hljs-built_in">self</span>::<span class="hljs-variable language_">class</span>, <span class="hljs-string">&#x27;handleError&#x27;</span>]);
+<span class="hljs-title function_ invoke__">set_exception_handler</span>([<span class="hljs-built_in">self</span>::<span class="hljs-variable language_">class</span>, <span class="hljs-string">&#x27;handleException&#x27;</span>]);
+</div></code></pre>
+<blockquote>
+<p><strong>Nota:</strong> estas mejoras no son solo extras; hacen que la aplicación sea más defendible, más mantenible y más cercana a un entorno real de producción.</p>
+</blockquote>
+<hr>
+<h2 id="flujo-de-funcionamiento">Flujo de funcionamiento</h2>
+<p>El funcionamiento del sistema comienza cuando el usuario accede al formulario de login e ingresa sus credenciales. El proceso de autenticación consulta la base de datos, recupera el usuario correspondiente y valida la contraseña de manera segura. Si el ingreso es correcto, se crea la sesión y se almacenan los datos necesarios para identificar al usuario durante la navegación.</p>
+<p>Una vez autenticado, el usuario puede acceder a distintas funcionalidades según su rol. Los administradores tienen acceso completo, incluyendo la gestión de usuarios, mientras que los empleados cuentan con permisos más limitados. Las acciones sobre los vehículos, como creación, modificación o eliminación, pasan por un proceso de validación antes de ser persistidas en la base de datos.</p>
+<p>El sistema mantiene el estado de navegación mediante parámetros de búsqueda, orden y paginación. Esto permite que los listados extensos puedan recorrerse sin perder el contexto de filtros aplicados ni el orden seleccionado por el usuario.</p>
+<blockquote>
+<p><strong>Nota:</strong> conservar el estado de navegación evita que cada cambio de página obligue a rehacer la búsqueda o el ordenamiento desde cero.</p>
+</blockquote>
+<hr>
+<h2 id="casos-de-uso">Casos de uso</h2>
+<h3 id="ingreso-de-un-empleado">Ingreso de un empleado</h3>
+<p>Un empleado accede al sistema escribiendo su email y su contraseña. El formulario envía los datos al procesador de login, que verifica la existencia del usuario en la base de datos y compara la contraseña con el hash almacenado. Si la validación es correcta, la aplicación crea la sesión y redirige al panel principal.</p>
+<h3 id="alta-de-un-vehículo-por-un-administrador">Alta de un vehículo por un administrador</h3>
+<p>Un administrador carga un nuevo vehículo desde el formulario correspondiente. El sistema valida que los campos obligatorios estén completos, confirma que el año y el precio sean válidos, construye el objeto <code>Vehicle</code> y lo persiste mediante el repositorio. Luego muestra un mensaje de confirmación y vuelve al listado paginado.</p>
+<hr>
+<h2 id="funciones-principales-del-crud">Funciones principales del CRUD</h2>
+<p>La operación de crear recibe los datos del formulario, los valida y ejecuta un <code>INSERT</code> sobre la tabla correspondiente. La operación de lectura muestra listados, búsquedas y filtros con ordenamiento y paginación. La actualización localiza el registro por ID, valida los cambios y ejecuta un <code>UPDATE</code>. La eliminación verifica permisos y confirma la acción antes de ejecutar el <code>DELETE</code>.</p>
+<p>En vehículos, el sistema además conserva el contexto de búsqueda, orden y página actual, de modo que una modificación o un cambio de navegación no rompa la experiencia del usuario. Esa decisión resulta importante cuando la cantidad de registros crece y el listado empieza a requerir más control visual.</p>
+<pre class="hljs"><code><div><span class="hljs-variable">$page</span> = <span class="hljs-title function_ invoke__">max</span>(<span class="hljs-number">1</span>, (<span class="hljs-keyword">int</span>)(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;page&#x27;</span>] ?? <span class="hljs-number">1</span>));
+<span class="hljs-variable">$perPage</span> = <span class="hljs-title function_ invoke__">max</span>(<span class="hljs-number">1</span>, <span class="hljs-title function_ invoke__">min</span>(<span class="hljs-number">25</span>, (<span class="hljs-keyword">int</span>)(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;perPage&#x27;</span>] ?? <span class="hljs-number">10</span>)));
+</div></code></pre>
+<blockquote>
+<p><strong>Nota:</strong> el CRUD no se limita a “guardar y borrar”. También implica controlar qué ve cada rol, cómo se ordenan los datos y cómo se recupera el estado entre navegaciones.</p>
+</blockquote>
+<hr>
+<h2 id="conclusión">Conclusión</h2>
+<p>El sistema desarrollado cumple con los requisitos planteados, integrando conceptos fundamentales de Programación Orientada a Objetos, manejo seguro de datos y organización de una aplicación web. La estructura adoptada permite que el proyecto sea mantenible y escalable, facilitando la incorporación de nuevas funcionalidades sin necesidad de reestructurar la base existente.</p>
+<p>Este trabajo no solo demuestra la implementación técnica de los conceptos vistos en la materia, sino también la capacidad de diseñar una solución coherente, organizada y preparada para crecer. La combinación de herencia, abstracción, encapsulamiento, persistencia segura y una interfaz uniforme produce una base sólida para defender el parcial y continuar ampliando el proyecto.</p>
+<blockquote>
+<p><strong>Advertencia:</strong> los ejemplos de código incluidos en esta documentación resumen la idea general. Para revisar la implementación completa conviene consultar el código del proyecto junto con el dump de base de datos ubicado en <a href="database/concesionario.sql">App/database/concesionario.sql</a>.</p>
+</blockquote>
+
+</body>
+</html>

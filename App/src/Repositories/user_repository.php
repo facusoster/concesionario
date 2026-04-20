@@ -11,6 +11,11 @@ require_once __DIR__ . '/../Models/user.php';
  */
 class UserRepository {
     private PDO $db;
+    private array $allowedSortColumns = [
+        'id' => 'id',
+        'name' => 'name',
+        'email' => 'email',
+    ];
 
     public function __construct() {
         $this->db = Database::getConnection();
@@ -54,19 +59,14 @@ class UserRepository {
      * Retorna usuarios filtrando por nombre, email y rol.
      * Si un filtro viene vacío, no se aplica.
      */
-    public function findByFilters(string $name = '', string $email = '', string $role = ''): array {
+    public function countByFilters(string $q = '', string $role = ''): int {
         try {
-            $sql = 'SELECT id, name, email, role FROM users WHERE 1=1';
+            $sql = 'SELECT COUNT(*) AS total FROM users WHERE 1=1';
             $params = [];
 
-            if ($name !== '') {
-                $sql .= ' AND name LIKE :name';
-                $params[':name'] = '%' . $name . '%';
-            }
-
-            if ($email !== '') {
-                $sql .= ' AND email LIKE :email';
-                $params[':email'] = '%' . $email . '%';
+            if ($q !== '') {
+                $sql .= ' AND (name LIKE :q OR email LIKE :q)';
+                $params[':q'] = '%' . $q . '%';
             }
 
             if ($role !== '') {
@@ -74,14 +74,54 @@ class UserRepository {
                 $params[':role'] = $role;
             }
 
-            $sql .= ' ORDER BY id DESC';
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+            return (int)$stmt->fetchColumn();
+        } catch (PDOException $e) {
+            Logger::error('Error SQL en countByFilters(User)', [
+                'method' => __METHOD__,
+                'q' => $q,
+                'role' => $role,
+                'exception' => $e->getMessage(),
+            ]);
+            throw new RepositoryException('No se pudo contar el listado de usuarios.', 0, $e);
+        }
+    }
+
+    public function findByFilters(string $q = '', string $sort = 'id', string $dir = 'desc', int $page = 1, int $perPage = 10, string $role = ''): array {
+        try {
+            $sql = 'SELECT id, name, email, role FROM users WHERE 1=1';
+            $params = [];
+
+            if ($q !== '') {
+                $sql .= ' AND (name LIKE :q OR email LIKE :q)';
+                $params[':q'] = '%' . $q . '%';
+            }
+
+            if ($role !== '') {
+                $sql .= ' AND role = :role';
+                $params[':role'] = $role;
+            }
+
+            $sortColumn = $this->allowedSortColumns[$sort] ?? 'id';
+            $sortDirection = strtolower($dir) === 'asc' ? 'ASC' : 'DESC';
+            $offset = max(0, ($page - 1) * $perPage);
+            $sql .= ' ORDER BY ' . $sortColumn . ' ' . $sortDirection . ' LIMIT ' . (int)$perPage . ' OFFSET ' . (int)$offset;
 
             $stmt = $this->db->prepare($sql);
             $stmt->execute($params);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            error_log($e->getMessage());
-            return [];
+            Logger::error('Error SQL en findByFilters(User)', [
+                'method' => __METHOD__,
+                'q' => $q,
+                'sort' => $sort,
+                'dir' => $dir,
+                'page' => $page,
+                'perPage' => $perPage,
+                'exception' => $e->getMessage(),
+            ]);
+            throw new RepositoryException('No se pudo consultar el listado de usuarios.', 0, $e);
         }
     }
 

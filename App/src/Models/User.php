@@ -65,11 +65,8 @@ abstract class User implements Authenticable {
 
 // Employee class
 class Employee extends User {
-    private string $sector;
-
-    public function __construct(string $name, string $email, string $password = '', string $sector = 'sales') {
+    public function __construct(string $name, string $email, string $password = '') {
         parent::__construct($name, $email, $password);
-        $this->sector = $sector;
     }
 
     public function getRole(): string { return 'employee'; }
@@ -104,7 +101,7 @@ class Administrator extends User {
     }
 
     // Convenience factory to create employees (demo method)
-    public function createEmployee(string $name, string $email, string $plainPwd, string $sector = 'sales'): Employee {
-        return new Employee($name, $email, $plainPwd, $sector);
+    public function createEmployee(string $name, string $email, string $plainPwd): Employee {
+        return new Employee($name, $email, $plainPwd);
     }
 }

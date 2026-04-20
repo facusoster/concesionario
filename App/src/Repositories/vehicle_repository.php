@@ -7,6 +7,14 @@ require_once __DIR__ . '/../Models/Vehicle.php';
 
 class VehicleRepository {
     private PDO $db;
+    private array $allowedSortColumns = [
+        'id' => 'id',
+        'type' => 'type',
+        'brand' => 'brand',
+        'model' => 'model',
+        'year' => 'year',
+        'price' => 'price',
+    ];
 
     public function __construct() {
         $this->db = Database::getConnection();
@@ -33,27 +41,43 @@ class VehicleRepository {
      * Retorna vehículos filtrando por type, brand y model.
      * Si un filtro viene vacío, no se aplica.
      */
-    public function getByFilters(string $type = '', string $brand = '', string $model = ''): array {
+    public function countByFilters(string $q = ''): int {
+        try {
+            $sql = 'SELECT COUNT(*) AS total FROM vehicles WHERE 1=1';
+            $params = [];
+
+            if ($q !== '') {
+                $sql .= ' AND (type LIKE :q OR brand LIKE :q OR model LIKE :q)';
+                $params[':q'] = '%' . $q . '%';
+            }
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+            return (int)$stmt->fetchColumn();
+        } catch (PDOException $e) {
+            Logger::error('Error SQL en countByFilters(Vehicle)', [
+                'method' => __METHOD__,
+                'q' => $q,
+                'exception' => $e->getMessage(),
+            ]);
+            throw new RepositoryException('No se pudo contar el listado de vehículos.', 0, $e);
+        }
+    }
+
+    public function getByFilters(string $q = '', string $sort = 'id', string $dir = 'desc', int $page = 1, int $perPage = 10): array {
         try {
             $sql = 'SELECT * FROM vehicles WHERE 1=1';
             $params = [];
 
-            if ($type !== '') {
-                $sql .= ' AND type = :type';
-                $params[':type'] = $type;
+            if ($q !== '') {
+                $sql .= ' AND (type LIKE :q OR brand LIKE :q OR model LIKE :q)';
+                $params[':q'] = '%' . $q . '%';
             }
 
-            if ($brand !== '') {
-                $sql .= ' AND brand LIKE :brand';
-                $params[':brand'] = '%' . $brand . '%';
-            }
-
-            if ($model !== '') {
-                $sql .= ' AND model LIKE :model';
-                $params[':model'] = '%' . $model . '%';
-            }
-
-            $sql .= ' ORDER BY id DESC';
+            $sortColumn = $this->allowedSortColumns[$sort] ?? 'id';
+            $sortDirection = strtolower($dir) === 'asc' ? 'ASC' : 'DESC';
+            $offset = max(0, ($page - 1) * $perPage);
+            $sql .= ' ORDER BY ' . $sortColumn . ' ' . $sortDirection . ' LIMIT ' . (int)$perPage . ' OFFSET ' . (int)$offset;
 
             $stmt = $this->db->prepare($sql);
             $stmt->execute($params);
@@ -65,8 +89,16 @@ class VehicleRepository {
             }
             return $list;
         } catch (PDOException $e) {
-            error_log($e->getMessage());
-            return [];
+            Logger::error('Error SQL en getByFilters(Vehicle)', [
+                'method' => __METHOD__,
+                'q' => $q,
+                'sort' => $sort,
+                'dir' => $dir,
+                'page' => $page,
+                'perPage' => $perPage,
+                'exception' => $e->getMessage(),
+            ]);
+            throw new RepositoryException('No se pudo consultar el listado de vehículos.', 0, $e);
         }
     }
 

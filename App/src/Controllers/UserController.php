@@ -26,23 +26,36 @@ class UserController extends Controller {
         try {
             Auth::requireAdmin();
 
-            $nameFilter = trim($_GET['name'] ?? '');
-            $emailFilter = trim($_GET['email'] ?? '');
-            $roleFilter = trim($_GET['role'] ?? '');
+            $q = trim($_GET['q'] ?? '');
+            $sort = trim($_GET['sort'] ?? 'id');
+            $dir = strtolower(trim($_GET['dir'] ?? 'desc')) === 'asc' ? 'asc' : 'desc';
+            $page = max(1, (int)($_GET['page'] ?? 1));
+            $perPage = max(1, min(25, (int)($_GET['perPage'] ?? 10)));
 
-            if (!in_array($roleFilter, ['', 'admin', 'employee'], true)) {
-                $roleFilter = '';
+            if (!in_array($sort, ['id', 'name', 'email'], true)) {
+                $sort = 'id';
             }
 
-            $users = $this->repo->findByFilters($nameFilter, $emailFilter, $roleFilter);
+            $totalUsers = $this->repo->countByFilters($q);
+            $totalPages = max(1, (int)ceil($totalUsers / $perPage));
+            if ($page > $totalPages) {
+                $page = $totalPages;
+            }
+
+            $users = $this->repo->findByFilters($q, $sort, $dir, $page, $perPage);
             $this->render('users/index', [
+                'pageTitle' => 'Gestion de Usuarios - Concesionario',
                 'users' => $users,
                 'message' => Flash::get('success') ?? Flash::get('info') ?? '',
                 'error' => Flash::get('error') ?? '',
                 'currentUserId' => (int)($_SESSION['user_id'] ?? 0),
-                'nameFilter' => $nameFilter,
-                'emailFilter' => $emailFilter,
-                'roleFilter' => $roleFilter,
+                'q' => $q,
+                'sort' => $sort,
+                'dir' => $dir,
+                'page' => $page,
+                'perPage' => $perPage,
+                'totalPages' => $totalPages,
+                'totalUsers' => $totalUsers,
             ]);
         } catch (AuthException $e) {
             Logger::error('Intento de acceso no autorizado a usuarios', ['user_id' => Auth::userId()]);
@@ -59,6 +72,7 @@ class UserController extends Controller {
             unset($_SESSION['old_user_form']);
 
             $this->render('users/create', [
+                'pageTitle' => 'Alta de Usuario - Concesionario',
                 'error' => Flash::get('error') ?? '',
                 'oldName' => $oldForm['name'] ?? '',
                 'oldEmail' => $oldForm['email'] ?? '',
@@ -160,6 +174,7 @@ class UserController extends Controller {
             }
 
             $this->render('users/edit', [
+                'pageTitle' => 'Editar Usuario - Concesionario',
                 'user' => $user,
                 'error' => Flash::get('error') ?? '',
             ]);
