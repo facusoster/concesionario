@@ -2,7 +2,8 @@
     <div class="card-body">
         <h2 class="h4 mb-2">Bienvenido, <?php echo htmlspecialchars($name); ?></h2>
         <p class="mb-0">Rol: <span class="badge text-bg-secondary"><?php echo htmlspecialchars($role); ?></span></p>
-        <p class="mb-0 mt-2">Vehículos disponibles: <span class="badge text-bg-success"><?php echo (int)($availableVehicles ?? 0); ?></span></p>
+    <p class="mb-0 mt-2">Vehículos disponibles: <span class="badge text-bg-success"><?php echo (int)($availableVehicles ?? 0); ?></span></p>
+    <p class="mb-0 mt-2">Vehículos vendidos: <span class="badge text-bg-info"><?php echo (int)($soldVehicles ?? 0); ?></span></p>
     </div>
 </div>
 

@@ -28,7 +28,7 @@ $pageTitle = $pageTitle ?? 'Concesionario';
 </head>
 <body>
 <header class="bg-white border-bottom py-3">
-    <div class="container">
+    <div class="container text-center">
         <h1 class="h4 mb-0">Sistema Concesionario</h1>
     </div>
 </header>

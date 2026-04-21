@@ -31,6 +31,7 @@ if (!in_array($sort, ['id', 'type', 'brand', 'model', 'year', 'price', 'status']
 $vehicleRepo = new VehicleRepository();
 $availableVehicles = $vehicleRepo->countByFilters('', 'disponible');
 $totalFilteredAvailable = $vehicleRepo->countByFilters($q, 'disponible');
+$soldVehicles = $vehicleRepo->countByFilters('', 'vendido');
 $totalPages = max(1, (int)ceil($totalFilteredAvailable / $perPage));
 if ($page > $totalPages) {
     $page = $totalPages;
@@ -47,6 +48,7 @@ $contentData = [
     'name' => $name,
     'role' => $role,
     'availableVehicles' => $availableVehicles,
+    'soldVehicles' => $soldVehicles,
     'saleVehicles' => $saleVehicles,
     'q' => $q,
     'sort' => $sort,
