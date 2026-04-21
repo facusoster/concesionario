@@ -1,7 +1,8 @@
-<div class="row justify-content-center">
-    <div class="col-12 col-sm-10 col-md-7 col-lg-5">
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
+<div class="d-flex align-items-center justify-content-center" style="min-height: calc(100vh - 140px);">
+    <div class="row justify-content-center w-100">
+        <div class="col-12 col-sm-10 col-md-7 col-lg-5">
+            <div class="card shadow-sm mt-3 mt-md-0">
+                <div class="card-body p-4">
                 <h2 class="h4 mb-3">Login</h2>
 
                 <form method="post" action="login_process.php" class="d-grid gap-2">
