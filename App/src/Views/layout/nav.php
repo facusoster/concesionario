@@ -21,6 +21,7 @@ $isAuth = isset($_SESSION['user_id']);
                     <?php if ($role === 'admin'): ?>
                         <li class="nav-item"><a class="nav-link" href="index.php?controller=users&amp;action=index">Usuarios</a></li>
                     <?php endif; ?>
+                    <li class="nav-item"><a class="nav-link" href="faq.php">FAQ</a></li>
                 <?php endif; ?>
             </ul>
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">

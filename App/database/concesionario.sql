@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 20-04-2026 a las 21:00:53
+-- Tiempo de generación: 22-04-2026 a las 16:17:25
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -70,6 +70,8 @@ CREATE TABLE `vehicles` (
   `model` varchar(100) NOT NULL,
   `year` smallint(5) UNSIGNED DEFAULT NULL,
   `price` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `image_name` varchar(255) DEFAULT NULL,
+  `status` enum('disponible','vendido') NOT NULL DEFAULT 'disponible',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -77,30 +79,30 @@ CREATE TABLE `vehicles` (
 -- Volcado de datos para la tabla `vehicles`
 --
 
-INSERT INTO `vehicles` (`id`, `type`, `brand`, `model`, `year`, `price`, `created_at`) VALUES
-(1, 'Auto', 'VW', 'gol', 1998, 8000.00, '2026-04-18 23:31:14'),
-(3, 'Camioneta', 'Ford', 'F100', 2020, 887.00, '2026-04-19 00:32:01'),
-(4, 'Moto', 'Suzuki', 'Ax-100', 2023, 99999999.99, '2026-04-19 01:01:52'),
-(5, 'auto', 'Toyota', 'Corolla', 2020, 18500.00, '2026-04-20 18:22:44'),
-(6, 'auto', 'Ford', 'Focus', 2019, 17200.00, '2026-04-20 18:22:44'),
-(7, 'auto', 'Volkswagen', 'Golf', 2021, 24900.00, '2026-04-20 18:22:44'),
-(8, 'auto', 'Chevrolet', 'Cruze', 2018, 16000.00, '2026-04-20 18:22:44'),
-(9, 'auto', 'Honda', 'Civic', 2022, 26800.00, '2026-04-20 18:22:44'),
-(10, 'auto', 'Peugeot', '208', 2023, 21500.00, '2026-04-20 18:22:44'),
-(11, 'auto', 'Nissan', 'Versa', 2021, 17850.00, '2026-04-20 18:22:44'),
-(12, 'auto', 'Renault', 'Sandero', 2017, 12900.00, '2026-04-20 18:22:44'),
-(13, 'auto', 'Fiat', 'Cronos', 2024, 22300.00, '2026-04-20 18:22:44'),
-(14, 'auto', 'Kia', 'Rio', 2020, 16750.00, '2026-04-20 18:22:44'),
-(15, 'moto', 'Honda', 'CB 250', 2022, 6900.00, '2026-04-20 18:22:44'),
-(16, 'moto', 'Yamaha', 'FZ-S', 2021, 6100.00, '2026-04-20 18:22:44'),
-(17, 'moto', 'Suzuki', 'Gixxer', 2023, 7200.00, '2026-04-20 18:22:44'),
-(18, 'moto', 'Bajaj', 'Rouser NS 200', 2020, 5400.00, '2026-04-20 18:22:44'),
-(19, 'moto', 'Zanella', 'ZB 110', 2019, 2100.00, '2026-04-20 18:22:44'),
-(20, 'camioneta', 'Toyota', 'Hilux', 2022, 38900.00, '2026-04-20 18:22:44'),
-(21, 'camioneta', 'Ford', 'Ranger', 2023, 41700.00, '2026-04-20 18:22:44'),
-(22, 'camioneta', 'Volkswagen', 'Amarok', 2021, 43500.00, '2026-04-20 18:22:44'),
-(23, 'camion', 'Mercedes-Benz', 'Atego', 2020, 78500.00, '2026-04-20 18:22:44'),
-(24, 'camion', 'Scania', 'P360', 2022, 99500.00, '2026-04-20 18:22:44');
+INSERT INTO `vehicles` (`id`, `type`, `brand`, `model`, `year`, `price`, `image_name`, `status`, `created_at`) VALUES
+(1, 'auto', 'Toyota', 'Corolla', 2020, 18500.00, NULL, 'disponible', '2026-04-20 20:02:13'),
+(2, 'auto', 'Ford', 'Focus', 2019, 17200.00, NULL, 'disponible', '2026-04-20 20:02:13'),
+(3, 'auto', 'Volkswagen', 'Golf', 2021, 24900.00, NULL, 'disponible', '2026-04-20 20:02:13'),
+(4, 'auto', 'Chevrolet', 'Cruze', 2018, 16000.00, NULL, 'disponible', '2026-04-20 20:02:13'),
+(5, 'auto', 'Honda', 'Civic', 2022, 26800.00, NULL, 'disponible', '2026-04-20 20:02:13'),
+(6, 'auto', 'Peugeot', '208', 2023, 21500.00, NULL, 'disponible', '2026-04-20 20:02:13'),
+(7, 'auto', 'Nissan', 'Versa', 2021, 17850.00, NULL, 'disponible', '2026-04-20 20:02:13'),
+(8, 'auto', 'Renault', 'Sandero', 2017, 12900.00, NULL, 'disponible', '2026-04-20 20:02:13'),
+(9, 'auto', 'Fiat', 'Cronos', 2024, 22300.00, NULL, 'disponible', '2026-04-20 20:02:13'),
+(10, 'auto', 'Kia', 'Rio', 2020, 16750.00, NULL, 'disponible', '2026-04-20 20:02:13'),
+(11, 'moto', 'Honda', 'CB 250', 2022, 6900.00, NULL, 'disponible', '2026-04-20 20:02:13'),
+(12, 'moto', 'Yamaha', 'FZ-S', 2021, 6100.00, NULL, 'disponible', '2026-04-20 20:02:13'),
+(13, 'moto', 'Suzuki', 'Gixxer', 2023, 7200.00, NULL, 'disponible', '2026-04-20 20:02:13'),
+(14, 'moto', 'Bajaj', 'Rouser NS 200', 2020, 5400.00, NULL, 'disponible', '2026-04-20 20:02:13'),
+(15, 'moto', 'Zanella', 'ZB 110', 2019, 2100.00, NULL, 'disponible', '2026-04-20 20:02:13'),
+(16, 'camioneta', 'Toyota', 'Hilux', 2022, 38900.00, NULL, 'disponible', '2026-04-20 20:02:13'),
+(17, 'camioneta', 'Ford', 'Ranger', 2023, 41700.00, NULL, 'disponible', '2026-04-20 20:02:13'),
+(18, 'Camioneta', 'Volkswagen', 'Amarok', 2021, 43500.00, NULL, 'disponible', '2026-04-20 20:02:13'),
+(19, 'camion', 'Mercedes-Benz', 'Atego', 2020, 78500.00, NULL, 'disponible', '2026-04-20 20:02:13'),
+(20, 'Camion', 'Scania', 'P360', 2022, 99500.00, NULL, 'vendido', '2026-04-20 20:02:13'),
+(21, 'Camioneta', 'Volkswagen', 'Amarok', 2022, 88000.00, NULL, 'vendido', '2026-04-20 20:21:13'),
+(22, 'Auto', 'Volkswagen', 'gol', 1995, 8888888.00, NULL, 'disponible', '2026-04-20 20:24:45'),
+(23, 'Auto', 'Volkswagen', 'Gol', 1994, 78000.00, '6daed76179b46306a449706826166b13.jpg', 'vendido', '2026-04-22 14:00:29');
 
 --
 -- Índices para tablas volcadas
@@ -133,7 +135,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT de la tabla `vehicles`
 --
 ALTER TABLE `vehicles`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

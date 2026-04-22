@@ -20,16 +20,37 @@
   - [Introducción](#introducción)
   - [Arquitectura del sistema](#arquitectura-del-sistema)
     - [Diagrama de capas](#diagrama-de-capas)
+  - [Plan de trabajo y evolución del proyecto](#plan-de-trabajo-y-evolución-del-proyecto)
+    - [Iteración 1: Base del sistema](#iteración-1-base-del-sistema)
+    - [Iteración 2: Gestión de vehículos](#iteración-2-gestión-de-vehículos)
+    - [Iteración 3: Gestión de archivos y estado](#iteración-3-gestión-de-archivos-y-estado)
+    - [Iteración 4: Mejoras de navegación y visualización](#iteración-4-mejoras-de-navegación-y-visualización)
+    - [Iteración 5: Exportación y análisis](#iteración-5-exportación-y-análisis)
   - [Modelo de dominio](#modelo-de-dominio)
   - [Persistencia de datos](#persistencia-de-datos)
   - [Base de datos](#base-de-datos)
   - [Checklist del parcial](#checklist-del-parcial)
-  - [Checklist de mejoras](#checklist-de-mejoras)
+  - [Principios de calidad y buenas prácticas](#principios-de-calidad-y-buenas-prácticas)
+    - [Manejo de errores y excepciones](#manejo-de-errores-y-excepciones)
+    - [Seguridad y control de acceso](#seguridad-y-control-de-acceso)
+    - [Comunicación clara](#comunicación-clara)
+    - [Arquitectura modular](#arquitectura-modular)
+    - [Interfaz visual](#interfaz-visual)
   - [Flujo de funcionamiento](#flujo-de-funcionamiento)
   - [Casos de uso](#casos-de-uso)
     - [Ingreso de un empleado](#ingreso-de-un-empleado)
     - [Alta de un vehículo por un administrador](#alta-de-un-vehículo-por-un-administrador)
   - [Funciones principales del CRUD](#funciones-principales-del-crud)
+  - [Estado final de entrega](#estado-final-de-entrega)
+  - [FAQ App](#faq-app)
+    - [¿Cómo ingreso al sistema?](#cómo-ingreso-al-sistema)
+    - [¿Qué puede hacer un empleado?](#qué-puede-hacer-un-empleado)
+    - [¿Qué puede hacer un administrador?](#qué-puede-hacer-un-administrador)
+    - [¿La imagen del vehículo es obligatoria?](#la-imagen-del-vehículo-es-obligatoria)
+    - [¿Qué validaciones tiene la imagen?](#qué-validaciones-tiene-la-imagen)
+    - [¿Qué pasa con un vehículo vendido?](#qué-pasa-con-un-vehículo-vendido)
+    - [¿Qué columnas exporta el CSV?](#qué-columnas-exporta-el-csv)
+    - [¿Dónde está el script de base de datos?](#dónde-está-el-script-de-base-de-datos)
   - [Conclusión](#conclusión)
 
 ---
@@ -75,9 +96,41 @@ flowchart TB
 
 ---
 
+## Plan de trabajo y evolución del proyecto
+
+El desarrollo del sistema se organizó siguiendo un enfoque incremental, donde cada iteración incorpora funcionalidades nuevas sobre una base previamente estable y validada. Este enfoque permite evitar la implementación monolítica, facilitando la detección temprana de errores, la mejora continua de la arquitectura y una evolución controlada del proyecto.
+
+Al estructurar el trabajo de esta manera se logran varios objetivos pedagógicos: cada iteración se puede analizar de forma independiente, las decisiones de diseño se justifican en contexto y el resultado final es un proyecto que refleja evolución natural, no una solución armada de cero.
+
+### Iteración 1: Base del sistema
+
+Se estableció la estructura general del proyecto, la configuración de PDO y el modelo de dominio inicial (`User`, `Vehicle`). En esta etapa se implementó el sistema de autenticación con manejo de sesiones y roles, ya que constituye la base para el control de acceso del resto del sistema. Las decisiones tomadas aquí (clase abstracta `User`, interface `Authenticable`, encapsulamiento en `Vehicle`) sentaron los pilares conceptuales que permitieron agregar funcionalidades posteriores sin reestructuración mayor.
+
+### Iteración 2: Gestión de vehículos
+
+Se desarrolló el CRUD completo de vehículos, incorporando validaciones de negocio y persistencia mediante repositorios. Esta etapa se construyó sobre la autenticación ya resuelta, permitiendo aplicar control de permisos en las operaciones. El enfoque de repositorio encapsuló las consultas SQL y permitió escalar el acceso a datos sin afectar la lógica de negocio.
+
+### Iteración 3: Gestión de archivos y estado
+
+Se agregó la funcionalidad de carga de imágenes con validaciones de formato y tamaño, junto con la generación de nombres únicos y almacenamiento seguro. Además, se incorporó el estado comercial del vehículo (`disponible` / `vendido`), integrándolo en el modelo de dominio y en las reglas del sistema. Esta iteración demostró cómo una nueva dimensión comercial requiere ajustes en múltiples capas sin quebrantar la arquitectura existente.
+
+### Iteración 4: Mejoras de navegación y visualización
+
+Se implementaron funcionalidades de búsqueda, ordenamiento y paginación, mejorando significativamente la experiencia de usuario en listados extensos. También se desarrolló una vista tipo dashboard con tarjetas de vehículos disponibles, reutilizando lógica de filtrado y navegación. En esta iteración se vio cómo la reutilización de componentes y parámetros de navegación mantiene coherencia funcional a medida que la interfaz se complejiza.
+
+### Iteración 5: Exportación y análisis
+
+Se incorporó la exportación de datos en formato CSV, respetando los filtros activos y restringida a usuarios administradores. Esta funcionalidad permite la integración con herramientas externas de análisis como Excel o Power BI. La iteración puso de relieve cómo una nueva modalidad de acceso a datos se puede agregar respetando las capas existentes y manteniendo el control de permisos.
+
+Este esquema de trabajo permitió construir el sistema de manera progresiva, validando cada funcionalidad antes de avanzar y asegurando que cada nueva característica se integrara de manera coherente con las anteriores.
+
+Es importante notar que los principios de calidad descritos en la siguiente sección se aplicaron de forma transversal durante todas estas iteraciones, no como un paso final sino como parte integral de la construcción.
+
+---
+
 ## Modelo de dominio
 
-El diseño del sistema se basa en los principios de la Programación Orientada a la Objetos. La jerarquía de usuarios está representada por una clase base abstracta y dos especializaciones concretas: `Employee` y `Administrator`. Esa estructura permite compartir comportamiento común y, al mismo tiempo, establecer diferencias de permisos y responsabilidades según el rol.
+El diseño del sistema se basa en los principios de la Programación Orientada a Objetos. La jerarquía de usuarios está representada por una clase base abstracta y dos especializaciones concretas: `Employee` y `Administrator`. Esa estructura permite compartir comportamiento común y, al mismo tiempo, establecer diferencias de permisos y responsabilidades según el rol.
 
 ```php
 interface Authenticable {
@@ -171,7 +224,7 @@ $_SESSION['role'] = $user->getRole();
 
 Las operaciones de alta, modificación y eliminación de vehículos también se ejecutan con consultas preparadas. De este modo, los datos ingresados por formulario no se mezclan con la sentencia SQL y el acceso a datos queda controlado por una capa específica.
 
-Desde la Fase 2, el módulo de vehículos incorpora subida de imágenes con validación de formato y tamaño, generación de nombre único, persistencia del nombre de archivo y política de fallback a una imagen por defecto cuando el usuario no carga foto.
+Desde la Iteración 2, el módulo de vehículos incorpora subida de imágenes con validación de formato y tamaño, generación de nombre único, persistencia del nombre de archivo y política de fallback a una imagen por defecto cuando el usuario no carga foto.
 
 ```php
 $maxBytes = 2 * 1024 * 1024;
@@ -179,11 +232,11 @@ $allowedExtensions = ['jpg', 'jpeg', 'png'];
 $allowedMimeTypes = ['image/jpeg', 'image/png'];
 ```
 
-En la Fase 3 se agregó el manejo de estado comercial del vehículo (`disponible` o `vendido`) en la capa de dominio, en el repositorio y en los formularios de alta/edición. Este estado también se expone en el listado con badge visual y participa en los filtros para navegación y dashboard.
+En la Iteración 3 se agregó el manejo de estado comercial del vehículo (`disponible` o `vendido`) en la capa de dominio, en el repositorio y en los formularios de alta/edición. Este estado también se expone en el listado con badge visual y participa en los filtros para navegación y dashboard.
 
-En la Fase 4 se incorporó en dashboard un bloque de tarjetas de vehículos en venta (disponibles), con foto, modelo, precio, estado, descripción breve y paginación. Este bloque reutiliza los mismos parámetros de navegación del módulo de vehículos (`q`, `sort`, `dir`, `page`, `perPage`) para mantener coherencia funcional.
+En la Iteración 4 se incorporó en dashboard un bloque de tarjetas de vehículos en venta (disponibles), con foto, modelo, precio, estado, descripción breve y paginación. Este bloque reutiliza los mismos parámetros de navegación del módulo de vehículos (`q`, `sort`, `dir`, `page`, `perPage`) para mantener coherencia funcional.
 
-En la Fase 5 se incorporó la exportación CSV de vehículos para análisis en BI, restringida al rol administrador. La exportación respeta filtros activos del listado (`q`, `status`, `sort`, `dir`) y genera un archivo en codificación UTF-8 con cabeceras estandarizadas para consumo en Excel y Power BI.
+En la Iteración 5 se incorporó la exportación CSV de vehículos para análisis en BI, restringida al rol administrador. La exportación respeta filtros activos del listado (`q`, `status`, `sort`, `dir`) y genera un archivo en codificación UTF-8 con cabeceras estandarizadas para consumo en Excel y Power BI.
 
 ---
 
@@ -222,8 +275,6 @@ Las claves primarias de ambas tablas utilizan `AUTO_INCREMENT`, lo que simplific
 
 La relación entre ambas tablas no es directa, pero el sistema utiliza la información de `users` para controlar quién puede realizar determinadas acciones sobre los vehículos. Esa decisión responde a la lógica de permisos, no a una asociación de datos entre entidades.
 
-> **Advertencia:** si se vuelve a importar el archivo SQL sobre una base ya cargada, pueden duplicarse registros. Para pruebas limpias conviene vaciar o recrear las tablas antes de volver a ejecutar el dump.
-
 ---
 
 ## Checklist del parcial
@@ -244,11 +295,13 @@ Auth::requireAdmin();
 
 ---
 
-## Checklist de mejoras
+## Principios de calidad y buenas prácticas
 
-El proyecto también incorpora varias mejoras que elevan la calidad del trabajo. Se definieron excepciones personalizadas por dominio, se agregaron bloques `try/catch/finally` en operaciones críticas, se centralizó el control de permisos y se unificó el sistema de mensajes mediante flash messages. Además, los errores técnicos se registran en logs y no se muestran directamente al usuario.
+Más allá de las funcionalidades específicas de cada iteración, el proyecto aplicó un conjunto de prácticas transversales que mejoran la calidad, mantenibilidad y robustez del código. Estos principios se implementaron de forma consistente a lo largo del desarrollo y facilitan que la aplicación pueda escalar y adaptarse sin degradación.
 
-La aplicación también utiliza un manejador global de errores para unificar la respuesta ante fallos y dispone de un layout compartido que evita repetir encabezado, navegación y pie en todas las vistas. A eso se suma búsqueda global, ordenamiento por columnas, paginación en usuarios y vehículos, y una interfaz visual mejorada con Bootstrap.
+### Manejo de errores y excepciones
+
+Se definieron excepciones personalizadas por dominio y se agregaron bloques `try/catch/finally` en operaciones críticas. Además, la aplicación implementa un manejador global de errores que unifica la respuesta ante fallos, evitando exponer detalles técnicos al usuario y registrando información relevante para auditoría.
 
 ```php
 try {
@@ -265,7 +318,22 @@ set_error_handler([self::class, 'handleError']);
 set_exception_handler([self::class, 'handleException']);
 ```
 
-> **Nota:** estas mejoras no son solo extras; hacen que la aplicación sea más defendible, más mantenible y más cercana a un entorno real de producción.
+### Seguridad y control de acceso
+
+El control de permisos está centralizado mediante métodos como `Auth::requireAdmin()`, asegurando que cada rol tenga acceso solo a las funcionalidades que le corresponden. Las contraseñas se almacenan con hash y se validan con `password_verify()`, nunca en texto plano. Las consultas SQL utilizan sentencias preparadas vía PDO para prevenir inyección de código.
+
+### Comunicación clara
+
+El sistema unificó los mensajes de usuario mediante flash messages, permitiendo que el resultado de operaciones (éxito, error, validación) se comunique de forma consistente en la interfaz sin necesidad de lógica condicional dispersa en las vistas.
+
+### Arquitectura modular
+
+El layout compartido (header, navegación, footer) evita repetición de código y facilita cambios globales. Cada componente de presentación se mantiene en una vista independiente, lo que simplifica el mantenimiento y permite evolucionar la interfaz sin afectar la lógica de negocio.
+
+### Interfaz visual
+
+La aplicación utiliza Bootstrap para garantizar consistencia visual, accesibilidad y responsividad. Este estándar de facto en desarrollo web permite que cualquier persona que entienda Bootstrap pueda navegar el código CSS sin sorpresas.
+
 
 ---
 
@@ -305,11 +373,11 @@ La operación de crear recibe los datos del formulario, los valida y ejecuta un 
 
 En el módulo de vehículos, el CRUD ahora contempla el ciclo completo de imágenes: durante la creación o edición se procesa el archivo, se genera un nombre único y se guarda en carpeta pública; cuando se reemplaza una imagen se elimina la anterior del servidor; y al eliminar un vehículo también se elimina su archivo asociado.
 
-Con la Fase 3, el CRUD incorpora reglas de estado: los registros vendidos permanecen en el sistema para mantener trazabilidad histórica y se prioriza su edición/consulta sobre su eliminación física.
+Con la Iteración 3, el CRUD incorpora reglas de estado: los registros vendidos permanecen en el sistema para mantener trazabilidad histórica y se prioriza su edición/consulta sobre su eliminación física.
 
-En Fase 4, la lectura se amplía con una vista de tarjetas paginada para vehículos disponibles, orientada a consulta rápida desde dashboard y pensada para futuras integraciones visuales de negocio.
+En Iteración 4, la lectura se amplía con una vista de tarjetas paginada para vehículos disponibles, orientada a consulta rápida desde dashboard y pensada para futuras integraciones visuales de negocio.
 
-En Fase 5, la lectura/exportación incorpora un endpoint dedicado de descarga CSV con columnas acordadas: `Id`, `Tipo`, `Marca`, `Modelo`, `Año`, `Precio`, `Estado`. Este flujo preserva filtros actuales y mantiene control de permisos para evitar exportaciones por usuarios no autorizados.
+En Iteración 5, la lectura/exportación incorpora un endpoint dedicado de descarga CSV con columnas acordadas: `Id`, `Tipo`, `Marca`, `Modelo`, `Año`, `Precio`, `Estado`. Este flujo preserva filtros actuales y mantiene control de permisos para evitar exportaciones por usuarios no autorizados.
 
 En vehículos, el sistema además conserva el contexto de búsqueda, orden y página actual, de modo que una modificación o un cambio de navegación no rompa la experiencia del usuario. Esa decisión resulta importante cuando la cantidad de registros crece y el listado empieza a requerir más control visual.
 
@@ -319,6 +387,67 @@ $perPage = max(1, min(25, (int)($_GET['perPage'] ?? 10)));
 ```
 
 > **Nota:** el CRUD no se limita a “guardar y borrar”. También implica controlar qué ve cada rol, cómo se ordenan los datos y cómo se recupera el estado entre navegaciones.
+
+---
+
+## Estado final de entrega
+
+- Login con roles (`employee` y `admin`) funcionando con control de permisos.
+- CRUD de vehículos operativo con validaciones de negocio.
+- Carga de imágenes implementada (opcional), con validación de formato/peso y fallback por defecto.
+- Manejo de estado comercial (`disponible` / `vendido`) con badges, filtros y conservación de historial.
+- Dashboard con tarjetas de vehículos en venta, búsqueda, ordenamiento y paginación.
+- Exportación CSV para BI con filtros activos y permisos restringidos a administradores.
+- Documentación técnica actualizada por iteración.
+
+> **Nota para demo:** las imágenes de `uploads/vehicles` pueden recargarse antes de la grabación del video explicativo para mostrar un escenario limpio y consistente.
+
+---
+
+<!-- FAQ:START -->
+## FAQ App
+
+### ¿Cómo ingreso al sistema?
+
+Desde `login.php` con email y contraseña. El sistema valida credenciales con `password_verify()` y habilita permisos según rol (`employee` o `admin`).
+
+### ¿Qué puede hacer un empleado?
+
+- Ver dashboard.
+- Consultar vehículos.
+- Buscar, ordenar y paginar listados.
+
+No puede gestionar usuarios ni exportar CSV.
+
+### ¿Qué puede hacer un administrador?
+
+Además de lo anterior:
+
+- Gestionar usuarios.
+- Crear, editar y eliminar vehículos disponibles.
+- Exportar CSV con filtros activos.
+
+### ¿La imagen del vehículo es obligatoria?
+
+No. Si no se carga una imagen, el sistema usa una imagen por defecto.
+
+### ¿Qué validaciones tiene la imagen?
+
+- Tamaño máximo: 2MB.
+- Formatos permitidos: `jpg`, `jpeg`, `png`.
+
+### ¿Qué pasa con un vehículo vendido?
+
+Se conserva para historial. Puede consultarse y filtrarse, pero no se elimina desde la gestión estándar.
+
+### ¿Qué columnas exporta el CSV?
+
+`Id`, `Tipo`, `Marca`, `Modelo`, `Año`, `Precio`, `Estado`.
+
+### ¿Dónde está el script de base de datos?
+
+En `App/database/concesionario.sql`.
+<!-- FAQ:END -->
 
 ---
 

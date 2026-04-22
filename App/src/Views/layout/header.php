@@ -7,6 +7,7 @@ $pageTitle = $pageTitle ?? 'Concesionario';
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php echo htmlspecialchars($pageTitle); ?></title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <!-- Google Fonts preconnect and Inter family -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
